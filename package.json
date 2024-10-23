@@ -1,0 +1,17 @@
+{
+  "name": "data_loger_avt_v1",
+  "version": "1.0.0",
+  "description": "data_loger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.21.1",
+    "request-ip": "^3.3.0"
+  }
+}

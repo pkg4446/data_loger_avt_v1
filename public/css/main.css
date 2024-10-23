@@ -1,0 +1,118 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #FFF3D6;
+}
+
+header {
+    background-color: #ffd980;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.navbar {
+    background-color: #333;
+    position: fixed;
+    top:0;
+    width: 100%;
+    
+}
+
+/* 숨겨진 체크박스 */
+.menu-toggle {
+    display: none;
+}
+
+/* 햄버거 메뉴 아이콘 */
+.menu-toggle-label {
+    display: none;
+    font-size: 24px;
+    color: white;
+    padding: 14px 20px;
+    cursor: pointer;
+    text-align: left;
+    background-color: #333;
+}
+
+/* 기본 메뉴 스타일 */
+.menu-links {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-links li {
+    text-align: center;
+}
+
+.menu-links a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+.menu-links a:hover {
+    background-color: #575757;
+}
+
+/* 체크박스가 선택된 경우 메뉴를 표시 */
+.menu-toggle:checked ~ .menu-links {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 60px; /* 헤더 높이와 일치 */
+    left: 0;
+    width: 100%;
+    background-color: #333;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+footer {
+    background-color: #ffce5d;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .navbar .menu-links {
+        display: none;
+    }
+
+    .menu-toggle-label {
+        display: block;
+    }
+
+    .menu-toggle:checked ~ .menu-links {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .menu-links a {
+        padding: 14px;
+    }
+}

@@ -1,0 +1,16 @@
+<main>
+    <section>
+        <div class="controls">
+            <button onclick="day_change(false)">하루 전</button>
+            <input type="date" id="data_day" onchange="getdata(new Date(this.value))">
+            <button onclick="day_change(true)">하루 뒤</button>
+        </div><br>
+        <div class="dashboard">
+            <h1>🐝 소비장 온도 분포 🍯</h1>
+            <div id="honeycomb" class="honeycomb"></div>
+            <div class="controls" id="controller"></div>
+            <div style="text-align: center;" id="timeDisplay">시간: 1</div>
+        </div>
+    </section>
+    <br><br><br>
+</main>
