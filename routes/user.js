@@ -32,7 +32,6 @@ router.post('/join', async function(req, res) {
     let status_code = 400;
     let response    = "nodata";
     const join_data = req.body;
-    console.log(join_data);
     if(join_data.id!=undefined && join_data.pass!=undefined && join_data.check!=undefined){
         status_code = 403;
         response    = "password";
