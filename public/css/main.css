@@ -7,26 +7,27 @@ body {
 }
 
 header {
-    background-color: #ffd980;
-    color: white;
-    padding: 20px;
+    background: linear-gradient(135deg, #ffd980 0%, #ffb347 100%);
+    color: #333;
+    padding: 15px;
     text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .navbar {
     background-color: #333;
     position: fixed;
-    top:0;
+    /* position: sticky; */
+    top: 0;
     width: 100%;
-    
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* 숨겨진 체크박스 */
 .menu-toggle {
     display: none;
 }
 
-/* 햄버거 메뉴 아이콘 */
 .menu-toggle-label {
     display: none;
     font-size: 24px;
@@ -34,16 +35,15 @@ header {
     padding: 14px 20px;
     cursor: pointer;
     text-align: left;
-    background-color: #333;
 }
 
-/* 기본 메뉴 스타일 */
 .menu-links {
     display: flex;
     justify-content: center;
     list-style-type: none;
     padding: 0;
     margin: 0;
+    transition: all 0.3s ease;
 }
 
 .menu-links li {
@@ -56,21 +56,12 @@ header {
     text-align: center;
     padding: 14px 20px;
     text-decoration: none;
+    transition: background-color 0.3s;
 }
 
 .menu-links a:hover {
     background-color: #575757;
-}
-
-/* 체크박스가 선택된 경우 메뉴를 표시 */
-.menu-toggle:checked ~ .menu-links {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    top: 60px; /* 헤더 높이와 일치 */
-    left: 0;
-    width: 100%;
-    background-color: #333;
+    transform: translateY(-2px);
 }
 
 main {
@@ -92,7 +83,7 @@ footer {
     background-color: #ffce5d;
     color: white;
     text-align: center;
-    padding: 10px 0;
+    padding: 0;
     position: fixed;
     bottom: 0;
     width: 100%;

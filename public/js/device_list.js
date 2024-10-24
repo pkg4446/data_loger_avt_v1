@@ -1,11 +1,58 @@
+let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
 }else{
+
     fetch_user_info();
     fetch_equipment();
 }
 ////--------------------------------------------------------------------////
+////-------------------////
+function lock_shift() {
+    view_locker = !view_locker;
+    const view_lock = document.getElementById("view_lock");
+    if(view_locker){
+        view_lock.innerText = "화면 풀림";
+        view_lock.style.backgroundColor = "#4ce73c";
 
+    }else{
+        view_lock.innerText = "화면 잠금";
+        view_lock.style.backgroundColor = "#e74c3c";
+    }
+}
+////-------------------////
+function page_detail(devid) {
+    if(view_locker){
+        console.log("page_detail: "+devid);
+    }
+}
+////-------------------////
+function goal_temp_change(updown,gorl_devid) {
+    if(view_locker){
+        let temperature = parseInt(document.getElementById(gorl_devid).innerText);
+        if(updown) temperature += 1;
+        else       temperature -= 1;
+        if(temperature<1)        temperature = 1;
+        else if(temperature>30 ) temperature = 30;
+        document.getElementById(gorl_devid).innerText = temperature
+    }
+}
+////-------------------////
+function temp_assist_change(temp_devid) {
+    if(view_locker){
+        const heat_state = (document.getElementById(temp_devid).innerHTML).split(": ")[1];
+        let heater_flage = false;
+        let heat_text    = "가온기능: ";
+        if(heat_state === "OFF"){
+            heater_flage = true;
+            heat_text += "ON";
+        }else{
+            heater_flage = false;
+            heat_text += "OFF";
+        }
+        document.getElementById(temp_devid).innerHTML = heat_text;
+    }
+}
 ////-------------------////
 function getdata(send_data, device, index){
     send_data.dvid = device[0];
@@ -36,32 +83,32 @@ function getdata(send_data, device, index){
         //     console.log(device_log);
         // }
         if(response.length>2){
-            let HTML_scrpit = `<div class="unit-info" onclick=console.log("test")>
-                                    <div class="cell">${index+1}</div>
+            const gorl_devid = "goal_"+device[0];
+            const heat_devid = "heat_"+device[0];
+            let HTML_scrpit = `<div class="unit-info">
                                     <div class="cell">${device[1]}</div>
                                     <div class="cell">${device[0]}</div>
+                                    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}")>가온기능: OFF</div>
+                                    <div class="cell"><span onclick=goal_temp_change(true,"${gorl_devid}")>▲목</span>표온도:<span id="${gorl_devid}">20</span><span onclick=goal_temp_change(false,"${gorl_devid}")>°C▼</span></div>
                                 </div>
                                 <div class="menu-row">
                                     <div class="cell header">벌통 번호</div>
-                                    <div class="cell header">가온판</div>
                                     <div class="cell header">공기 온도</div>
                                     <div class="cell header">봉구 온도</div>
-                                    <div class="cell header">봉구 습도</div>                                    
-                                    <div class="cell">전체설정</div>
+                                    <div class="cell header">봉구 습도</div>   
                                 </div>
-                                `;
+                                <div onclick=page_detail("${device[0]}")>`;
             const device_log = JSON.parse(response[response.length-2]);
             for (let index = 0; index < 5; index++) {
                 HTML_scrpit += `<div class="data-row">
                                     <div class="cell">${index+1}</div>
-                                    <div class="cell status-on">ON</div>
                                     <div class="cell temp-cold">${device_log["TM"+index]}°C</div>
                                     <div class="cell temp-warm">${device_log["IC"+index]}°C</div>
-                                    <div class="cell humidity">${device_log["HM"+index]}%</div>                                    
-                                    <div class="cell">개별설정</div>
+                                    <div class="cell humidity">${device_log["HM"+index]}%</div>
                                 </div>`;
             }
-            document.getElementById("unit_"+device[0]  ).innerHTML = HTML_scrpit;
+            HTML_scrpit += "</div>"
+            document.getElementById("unit_"+device[0]).innerHTML = HTML_scrpit;
         }
     })
     .catch((error) => {
@@ -117,7 +164,6 @@ function fetch_equipment() {
     });
 }
 ////-------------------////
-
 function fetch_user_info() {
     // 여기에 실제 서버 URL을 입력하세요
     const today = new Date();
