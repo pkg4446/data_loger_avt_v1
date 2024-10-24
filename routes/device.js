@@ -6,10 +6,10 @@ const requestIp     = require('request-ip');
 router.post('/log', async function(req, res) {    
     const IP  = requestIp.getClientIp(req);
 
-    const   path_device = "./data/device/"+req.body.dvid;
+    const   path_device = "./data/device/"+req.body.DVC;
     const   date_now    = new Date();
     let     path_log    = path_device+"/"+date_now.getFullYear()+"/";
-    delete  req.body.dvid;
+    delete  req.body.DVC;
     req.body.date = date_now;
     
     if(date_now.getMonth()<10) path_log += "0";

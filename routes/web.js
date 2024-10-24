@@ -3,9 +3,9 @@ const html      = require('../html_viewer');
 const router    = express.Router();
 
 router.get('/', async function(req, res) {
-    const css = html.css("main") + html.css("hive");
-    const js  = html.js("main");
-    const web_page = html.page("index",css,js);
+    const css = html.css("main") + html.css("list");
+    const js  = html.js("device_list");
+    let web_page = html.page("list",css,js);
     res.status(201).send(web_page);
 });
 
