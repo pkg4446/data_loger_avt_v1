@@ -28,6 +28,24 @@ router.post('/login', async function(req, res) {
     res.status(status_code).send(response);
 });
 
+router.post('/info', async function(req, res) {
+    let status_code  = 400;
+    let response     = "nodata";
+    const login_data = req.body;
+    if(login_data.id!=undefined&&login_data.token!=undefined){
+        const path_user = "./data/user/"+login_data.id;
+        if(file_system.check(path_user+"/config.csv") && file_system.check(path_user+"/login.txt")){
+            status_code = 200;
+            const user_config = file_system.fileRead(path_user,"config.csv").split(",");
+            response = user_config[3]+","+user_config[4]+","+user_config[5]+","+user_config[6];
+        }else{
+            status_code = 406;
+            response    = "userid";
+        }
+    }
+    res.status(status_code).send(response);
+});
+
 router.post('/join', async function(req, res) {
     let status_code = 400;
     let response    = "nodata";
@@ -44,7 +62,8 @@ router.post('/join', async function(req, res) {
             response    = "success";
             file_system.folderMK(path_user);
             const randombyte = crypto.randomBytes(4).toString('hex');
-            let file_content = randombyte+","+crypto.createHash("sha256").update(join_data.pass+randombyte).digest("base64")+","+(new Date())+","+join_data.name+","+join_data.tel+"\r\n";
+            let file_content = randombyte+","+crypto.createHash("sha256").update(join_data.pass+randombyte).digest("base64")+","+(new Date())+","+
+            join_data.name+","+join_data.farm+","+join_data.addr+","+join_data.tel+"\r\n";
             file_system.fileMK(path_user,file_content,"config.csv");
         }
     }

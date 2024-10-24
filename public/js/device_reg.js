@@ -7,7 +7,7 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     const userid    = localStorage.getItem('user');
     const token     = localStorage.getItem('token');
     const device    = document.getElementById('device').value;
-    const location  = document.getElementById('location').value;
+    const device_name  = document.getElementById('device_name').value;
 
     fetch(window.location.protocol+"//"+window.location.host+"/user/connect", {
         method: 'POST',
@@ -18,7 +18,7 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
             id:     userid,
             token:  token,
             dvid:   device,
-            name:   location
+            name:   device_name
         })
     })
     .then(response => {

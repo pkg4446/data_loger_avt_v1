@@ -3,24 +3,19 @@ if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
 }
 document.getElementById('userForm').addEventListener('submit', function(event) {
     event.preventDefault();
-
-    const userid    = document.getElementById('userid').value;
-    const password  = document.getElementById('password').value;
-    const passcheck = document.getElementById('passcheck').value;
-    const username  = document.getElementById('username').value;
-    const phonenum  = document.getElementById('userphone').value;
-
     fetch(window.location.protocol+"//"+window.location.host+"/user/join", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            id:     userid,
-            pass:   password,
-            check:  passcheck,
-            name:   username,
-            tel:    phonenum
+            id:     document.getElementById('userid').value,
+            pass:   document.getElementById('password').value,
+            check:  document.getElementById('passcheck').value,
+            name:   document.getElementById('username').value,
+            tel:    document.getElementById('userphone').value,
+            farm:   document.getElementById('farmname').value,
+            addr:   document.getElementById('farmaddr').value
         })
     })
     .then(response => {

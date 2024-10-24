@@ -5,7 +5,7 @@ const router    = express.Router();
 router.get('/', async function(req, res) {
     const css = html.css("main") + html.css("list");
     const js  = html.js("device_list");
-    let web_page = html.page("list",css,js);
+    let web_page = html.page("device_list",css,js);
     res.status(201).send(web_page);
 });
 
@@ -33,7 +33,7 @@ router.get('/connect', async function(req, res) {
 router.get('/select', async function(req, res) {
     const css = html.css("main") + html.css("list");
     const js  = html.js("device_list");
-    let web_page = html.page("list",css,js);
+    let web_page = html.page("device_list",css,js);
     res.status(201).send(web_page);
 });
 module.exports = router;

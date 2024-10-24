@@ -37,7 +37,7 @@ main {
 
 .unit-info {
     display: grid;
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: 0.4fr 1.5fr 4fr;
     gap: 10px;
     margin: 10px 0;
     background-color: #f0f8ff;
