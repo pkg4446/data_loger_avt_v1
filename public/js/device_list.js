@@ -153,8 +153,6 @@ function getdata(send_data, device, index){
             today.setHours(today.getHours()-1);
             const data_date = new Date(device_log.date);
             HTML_scrpit += `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
-
-            console.log(device_config);
             if(device_config.dv != null && device_config.dv[0] === device_config.ab) HTML_scrpit += 'style="background-color:Chartreuse;"'
             else HTML_scrpit += 'style="background-color:Yellow;"'
 
@@ -166,8 +164,6 @@ function getdata(send_data, device, index){
 
             // HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>`;
             HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}") `;
-            console.log(device_config.th);
-            
             if(device_config.dv != null && device_config.dv[1] === device_config.th) HTML_scrpit += 'style="background-color:Chartreuse;"'
             else{
                 HTML_scrpit += 'style="background-color:Yellow;"';
@@ -377,7 +373,6 @@ function fetch_equipment_heater(device_id,func,value) {
         func:   func,
         value:  value
     }
-    console.log(post_data);
     fetch(window.location.protocol+"//"+window.location.host+"/hive/heater", {
         method: 'POST',
         headers: {
