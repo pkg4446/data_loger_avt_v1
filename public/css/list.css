@@ -4,6 +4,13 @@
     margin: 0 auto;
 }
 
+input[type=button]{
+border: none;
+color: white;
+text-decoration: none;
+cursor: pointer;
+}
+
 .btn {
     border: none;
     border-radius: 8px;
@@ -80,6 +87,7 @@
 .temp-warm { background-color: #fff3e0; color: #f57c00; }
 .temp-hot { background-color: #ffebee; color: #c62828; }
 .humidity { background-color: #e8f5e9; color: #2e7d32; }
+.warning { background-color: #ffebee; color: red; }
 
 .unit-section {
     background: white;

@@ -4,7 +4,8 @@ const router    = express.Router();
 
 router.get('/', async function(req, res) {
     const css = html.css("main") + html.css("list");
-    const js  = html.js("device_list");
+    let   js  = html.js("device_list");
+          js += html.js("sweetalert2");
     let web_page = html.page("device_list",css,js);
     res.status(201).send(web_page);
 });

@@ -26,15 +26,11 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
             throw new Error('비밀번호가 다릅니다.');
         }else if (response.status==406) {
             throw new Error('이미 가입된 아이디 입니다.');
-        }
-        return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
-    })
-    .then(data => {
-        if (data != "nodata" && data != "password" && data != "userid") {
+        }else{
             alert('가입 성공!');
             window.location.href = '/web/login';
-        } else {
         }
+        return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
     })
     .catch((error) => {
         console.error('Error:', error);

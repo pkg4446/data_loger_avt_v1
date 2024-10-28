@@ -2,11 +2,19 @@ let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
 }else{
-
     fetch_user_info();
     fetch_equipment();
 }
 ////--------------------------------------------------------------------////
+function alert_swal(icon,title) {
+    Swal.fire({
+        position: "top",
+        icon:   icon,
+        title:  title,
+        showConfirmButton: false,
+        timer:  1500
+    });
+}
 ////-------------------////
 function lock_shift() {
     view_locker = !view_locker;
@@ -27,36 +35,94 @@ function page_detail(devid) {
     }
 }
 ////-------------------////
-function goal_temp_change(updown,gorl_devid) {
+function device_rename(devid) {
     if(view_locker){
-        let temperature = parseInt(document.getElementById(gorl_devid).innerText);
-        if(updown) temperature += 1;
-        else       temperature -= 1;
-        if(temperature<1)        temperature = 1;
-        else if(temperature>30 ) temperature = 30;
-        document.getElementById(gorl_devid).innerText = temperature
+        Swal.fire({
+            title: "장비 이름",
+            input: "text",
+            showCancelButton: true,
+            inputPlaceholder: "변경할 이름을 입력하세요.",
+            confirmButtonText: "변경",
+            cancelButtonText:  "취소"
+        }).then((result) => {
+            if (result.isConfirmed){
+                const device_name = result.value.replaceAll(" ","");
+                if(device_name === ""){
+                    Swal.fire({
+                        title: "이름이 없습니다.",
+                        text: "이름을 입력하세요.",
+                        icon: "error"
+                    });
+                }else{
+                    fetch_device_rename(devid,device_name   );
+                }
+            }
+        });
     }
 }
 ////-------------------////
-function temp_assist_change(temp_devid) {
+function goal_temp_change(gorl_devid,devid) {
     if(view_locker){
-        const heat_state = (document.getElementById(temp_devid).innerHTML).split(": ")[1];
-        let heater_flage = false;
-        let heat_text    = "가온기능: ";
-        if(heat_state === "OFF"){
-            heater_flage = true;
-            heat_text += "ON";
-        }else{
-            heater_flage = false;
-            heat_text += "OFF";
-        }
-        document.getElementById(temp_devid).innerHTML = heat_text;
+        Swal.fire({
+            title: "가온 목표온도",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "설정",
+            cancelButtonText:  "취소",
+            input: "range",
+            inputLabel: "목표온도",
+            inputAttributes: {
+                min: "1",
+                max: "30",
+                step: "1"
+        },
+            inputValue: parseInt(document.getElementById(gorl_devid).innerText)
+        }).then((result) => {
+            if (result.isConfirmed){
+                const temperature = result.value;
+                fetch_equipment_heater(devid,true,temperature);
+                document.getElementById(gorl_devid).innerText = temperature;
+            }
+        });        
+    }
+}
+////-------------------////
+function temp_assist_change(temp_devid,devid) {
+    if(view_locker){
+        const heat_text = "가온기능: ";
+        Swal.fire({
+            title: "가온기능",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "사용",
+            cancelButtonText:  "정지"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById(temp_devid).innerHTML = heat_text+"ON";
+                fetch_equipment_heater(devid,false,true);
+                Swal.fire({
+                    title: "ON",
+                    text: "가온기능을 사용합니다.",
+                    icon: "success"
+                });
+                } else if(result.dismiss === "cancel"){
+                document.getElementById(temp_devid).innerHTML = heat_text+"OFF";
+                fetch_equipment_heater(devid,false,false);
+                Swal.fire({
+                    title: "OFF",
+                    text: "가온기능을 정지합니다.",
+                    icon: "error"
+                });
+            }
+        });
     }
 }
 ////-------------------////
 function getdata(send_data, device, index){
     send_data.dvid = device[0];
-    fetch(window.location.protocol+"//"+window.location.host+"/user/log", {
+    fetch(window.location.protocol+"//"+window.location.host+"/user/dvlog", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -78,27 +144,35 @@ function getdata(send_data, device, index){
     })
     .then(data => {
         const response = data.split("\r\n");
-        // for (let index = 1; index < response.length-1; index++) {
-        //     const device_log = response[index];
-        //     console.log(device_log);
-        // }
-        if(response.length>2){
-            const gorl_devid = "goal_"+device[0];
-            const heat_devid = "heat_"+device[0];
-            let HTML_scrpit = `<div class="unit-info">
-                                    <div class="cell">${device[1]}</div>
-                                    <div class="cell">${device[0]}</div>
-                                    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}")>가온기능: OFF</div>
-                                    <div class="cell"><span onclick=goal_temp_change(true,"${gorl_devid}")>▲목</span>표온도:<span id="${gorl_devid}">20</span><span onclick=goal_temp_change(false,"${gorl_devid}")>°C▼</span></div>
-                                </div>
-                                <div class="menu-row">
-                                    <div class="cell header">벌통 번호</div>
-                                    <div class="cell header">공기 온도</div>
-                                    <div class="cell header">봉구 온도</div>
-                                    <div class="cell header">봉구 습도</div>   
-                                </div>
-                                <div onclick=page_detail("${device[0]}")>`;
-            const device_log = JSON.parse(response[response.length-2]);
+        const gorl_devid = "goal_"+device[0];
+        const heat_devid = "heat_"+device[0];
+        let HTML_scrpit = `<div class="unit-info">
+                                <div class="cell" onclick=device_rename("${device[0]}")>${device[1]}</div>
+                                <div class="cell">${device[0]}</div>
+                                <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온기능: OFF</div>
+                                <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>
+                            </div>
+                            <div class="menu-row">
+                                <div class="cell header">벌통 번호</div>
+                                <div class="cell header">공기 온도</div>
+                                <div class="cell header">봉구 온도</div>
+                                <div class="cell header">봉구 습도</div>   
+                            </div>
+                            <div onclick=page_detail("${device[0]}")>`;
+        if(response[0]!="null"){
+            const device_log = JSON.parse(response[0]);
+            const today = new Date();
+            today.setHours(today.getHours()-1);
+            const data_date = new Date(device_log.date);
+            if(today>data_date){
+                HTML_scrpit += `<div class="data-row">
+                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비삭제</div>
+                                <div class="cell warning">마지막 통신</div>
+                                <div class="cell warning">${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일</div>
+                                <div class="cell warning">${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
+                                
+                            </div>`;
+            }
             for (let index = 0; index < 5; index++) {
                 HTML_scrpit += `<div class="data-row">
                                     <div class="cell">${index+1}</div>
@@ -107,13 +181,20 @@ function getdata(send_data, device, index){
                                     <div class="cell humidity">${device_log["HM"+index]}%</div>
                                 </div>`;
             }
-            HTML_scrpit += "</div>"
-            document.getElementById("unit_"+device[0]).innerHTML = HTML_scrpit;
+        }else{
+            HTML_scrpit += `<div class="data-row">
+                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비삭제</div>
+                                <div class="cell warning">-</div>
+                                <div class="cell warning">장비</div>
+                                <div class="cell warning">미설치</div>
+                            </div>`;
         }
+        HTML_scrpit += "</div>"
+        document.getElementById("unit_"+device[0]).innerHTML = HTML_scrpit;
     })
     .catch((error) => {
         console.error('Error:', error);
-        alert('오류가 발생했습니다.');
+        alert_swal("error",'오류가 발생했습니다.');
     });
 }
 ////-------------------////
@@ -135,13 +216,11 @@ function fetch_equipment() {
     })
     .then(response => {
         if (response.status==400 || response.status==401) {
-            alert('로그인 정보가 없습니다.');
+            alert_swal("error",'로그인 정보가 없습니다.');
             window.location.href = '/web/login';
         }else if (response.status==403) {
-            alert('등록된 장비가 없습니다.');
+            alert_swal("error",'등록된 장비가 없습니다.');
             window.location.href = '/web/connect';
-        }else if (response.status==404) {
-            throw new Error('not found');
         }
         return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
     })
@@ -180,19 +259,120 @@ function fetch_user_info() {
     })
     .then(response => {
         if (response.status==400 || response.status==406) {
-            alert('로그인 정보가 없습니다.');
+            alert_swal("error",'로그인 정보가 없습니다.');
             window.location.href = '/web/login';
-        }else if (response.status==404) {
-            throw new Error('not found');
         }
         return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
     })
     .then(data => {
         const user_info = data.split(",");
-        console.log(user_info);
         document.getElementById('user_name').innerText = user_info[0];
         document.getElementById('farm_name').innerText = user_info[1];
         document.getElementById('farm_addr').innerText = user_info[2];
+    })
+    .catch(error => {
+        console.log(error);
+    });
+}
+////-------------------////
+function fetch_equipment_disconnect(device_id) {
+    if(view_locker){
+        Swal.fire({
+            title: "장비 연결",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "삭제",
+            cancelButtonText:  "취소"
+        }).then((result) => {
+            if (result.isConfirmed){
+                const post_data = {
+                    id:     localStorage.getItem('user'),
+                    token:  localStorage.getItem('token'),
+                    dvid:   device_id
+                }
+                fetch(window.location.protocol+"//"+window.location.host+"/user/disconnect", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(post_data)
+                })
+                .then(response => {
+                    if (response.status==400 || response.status==401) {
+                        alert_swal("error",'로그인 정보가 없습니다.');
+                        window.location.href = '/web/login';
+                    }else if (response.status==403) {
+                        alert_swal("warning","등록된 장비가 없습니다.");
+                    }else if (response.status==200) {
+                        document.getElementById(`unit_${device_id}`).innerHTML="";
+                        alert_swal("success","장비등록을 해제했습니다.");                        
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            }
+        });
+    }
+}
+////-------------------////
+function fetch_device_rename(device_id,device_name) {
+    if(view_locker){
+        const post_data = {
+            id:     localStorage.getItem('user'),
+            token:  localStorage.getItem('token'),
+            dvid:   device_id,
+            name:   device_name
+        }
+        fetch(window.location.protocol+"//"+window.location.host+"/user/devicerename", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(post_data)
+        })
+        .then(response => {
+            if (response.status==400 || response.status==401) {
+                alert_swal("error",'로그인 정보가 없습니다.');
+                window.location.href = '/web/login';
+            }else if (response.status==403) {
+                alert_swal("warning","등록된 장비가 없습니다.");
+            }else if (response.status==200) {
+                alert_swal("success","장비등록을 해제했습니다.");
+            }
+        })
+        .catch(error => {
+            console.log(error);
+        });
+    }
+}
+////-------------------////
+function fetch_equipment_heater(device_id,func,value) {
+    // 여기에 실제 서버 URL을 입력하세요
+    const post_data = {
+        id:     localStorage.getItem('user'),
+        token:  localStorage.getItem('token'),
+        dvid:   device_id,
+        func:   func,
+        value:  value
+    }
+    console.log(post_data);
+    fetch(window.location.protocol+"//"+window.location.host+"/user/heater", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(post_data)
+    })
+    .then(response => {
+        if (response.status==400 || response.status==401) {
+            alert_swal("error",'로그인 정보가 없습니다.');
+            window.location.href = '/web/login';
+        }else if (response.status==403) {
+            alert_swal("warning","등록된 장비가 없습니다.");
+        }else if (response.status==200) {
+            alert_swal("success","설정이 적용 되었습니다.");
+        }
     })
     .catch(error => {
         console.log(error);

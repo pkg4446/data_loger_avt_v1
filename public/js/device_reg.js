@@ -31,14 +31,8 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
             throw new Error('등록되지 않은 장비입니다.');
         }else if (response.status==409) {
             throw new Error('이미 등록된 장비입니다.');
-        }
-        return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
-    })
-    .then(data => {
-        if (data != "nodata" && data != "password" && data != "userid") {
+        }else{
             alert('장비 등록!');
-            window.location.href = '/web/select';
-        } else {
         }
     })
     .catch((error) => {

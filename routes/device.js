@@ -21,6 +21,7 @@ router.post('/log', async function(req, res) {
     
     if(!file_system.check(path_log)) file_system.folderMK(path_log);
     file_system.fileMK(path_device,IP+"\r\n","ip.txt");
+    file_system.fileMK(path_device,file_content,"lastest.csv");
     if(file_system.check(path_log+"/"+filename+".csv")){
         file_system.fileADD(path_log,file_content,filename+".csv");
     }else{
