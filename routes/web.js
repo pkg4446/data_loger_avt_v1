@@ -26,7 +26,8 @@ router.get('/join', async function(req, res) {
 
 router.get('/connect', async function(req, res) {
     const css = html.css("main") + html.css("user");
-    const js  = html.js("device_reg");
+    let   js  = html.js("device_reg");
+          js += html.js("sweetalert2");
     let web_page = html.page("device_reg",css,js);
     res.status(201).send(web_page);
 });

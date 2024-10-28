@@ -54,7 +54,7 @@ function device_rename(devid) {
                         icon: "error"
                     });
                 }else{
-                    fetch_device_rename(devid,device_name   );
+                    fetch_device_rename(devid,device_name);
                 }
             }
         });
@@ -101,7 +101,7 @@ function temp_assist_change(temp_devid,devid) {
         }).then((result) => {
             if (result.isConfirmed) {
                 document.getElementById(temp_devid).innerHTML = heat_text+"ON";
-                fetch_equipment_heater(devid,false,true);
+                fetch_equipment_heater(devid,false,1);
                 Swal.fire({
                     title: "ON",
                     text: "가온기능을 사용합니다.",
@@ -109,7 +109,7 @@ function temp_assist_change(temp_devid,devid) {
                 });
                 } else if(result.dismiss === "cancel"){
                 document.getElementById(temp_devid).innerHTML = heat_text+"OFF";
-                fetch_equipment_heater(devid,false,false);
+                fetch_equipment_heater(devid,false,0);
                 Swal.fire({
                     title: "OFF",
                     text: "가온기능을 정지합니다.",
@@ -122,7 +122,7 @@ function temp_assist_change(temp_devid,devid) {
 ////-------------------////
 function getdata(send_data, device, index){
     send_data.dvid = device[0];
-    fetch(window.location.protocol+"//"+window.location.host+"/user/dvlog", {
+    fetch(window.location.protocol+"//"+window.location.host+"/hive/config", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -131,27 +131,51 @@ function getdata(send_data, device, index){
     })
     .then(response => {
         response.status
-        if (response.status==400) {
-            throw new Error('정보가 누락됐습니다.');
-        }else if (response.status==401) {
-            throw new Error('로그인 정보가 없습니다.');
+        if (response.status==400 || response.status==401) {
+            alert_swal("error",'로그인 정보가 없습니다.');
         }else if (response.status==403) {
-            throw new Error('등록되지 않은 장비입니다.');
-        }else if (response.status==409) {
-            throw new Error('이미 등록된 장비입니다.');
+            alert_swal("error",'등록되지 않은 장비입니다.');
         }
         return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
     })
     .then(data => {
-        const response = data.split("\r\n");
+        const response = data;
         const gorl_devid = "goal_"+device[0];
         const heat_devid = "heat_"+device[0];
         let HTML_scrpit = `<div class="unit-info">
                                 <div class="cell" onclick=device_rename("${device[0]}")>${device[1]}</div>
-                                <div class="cell">${device[0]}</div>
-                                <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온기능: OFF</div>
-                                <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>
-                            </div>
+                                <div class="cell">${device[0]}</div>`;
+        if(response!="null"){
+            const response_data = response.split("\r\n");
+            const device_log    = JSON.parse(response_data[0]);
+            const device_config = JSON.parse(response_data[1]);            
+            const today = new Date();
+            today.setHours(today.getHours()-1);
+            const data_date = new Date(device_log.date);
+            HTML_scrpit += `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
+
+            console.log(device_config);
+            if(device_config.dv != null && device_config.dv[0] === device_config.ab) HTML_scrpit += 'style="background-color:Chartreuse;"'
+            else HTML_scrpit += 'style="background-color:Yellow;"'
+
+            if(device_config.ab === '1'){
+                HTML_scrpit += ">가온기능: ON</div>";
+            }else{
+                HTML_scrpit += ">가온기능: OFF</div>";
+            }
+
+            // HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>`;
+            HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}") `;
+            console.log(device_config.th);
+            
+            if(device_config.dv != null && device_config.dv[1] === device_config.th) HTML_scrpit += 'style="background-color:Chartreuse;"'
+            else{
+                HTML_scrpit += 'style="background-color:Yellow;"';
+                if(device_config.th == null) device_config.th = 0;
+            }
+            HTML_scrpit += `>목표:<span id="${gorl_devid}">${device_config.th}</span>°C</div>`;
+
+            HTML_scrpit += `</div>
                             <div class="menu-row">
                                 <div class="cell header">벌통 번호</div>
                                 <div class="cell header">공기 온도</div>
@@ -159,11 +183,6 @@ function getdata(send_data, device, index){
                                 <div class="cell header">봉구 습도</div>   
                             </div>
                             <div onclick=page_detail("${device[0]}")>`;
-        if(response[0]!="null"){
-            const device_log = JSON.parse(response[0]);
-            const today = new Date();
-            today.setHours(today.getHours()-1);
-            const data_date = new Date(device_log.date);
             if(today>data_date){
                 HTML_scrpit += `<div class="data-row">
                                 <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비삭제</div>
@@ -182,7 +201,10 @@ function getdata(send_data, device, index){
                                 </div>`;
             }
         }else{
-            HTML_scrpit += `<div class="data-row">
+            HTML_scrpit += `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온기능: OFF</div>
+                                <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>
+                            </div>
+                            <div class="menu-row">
                                 <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비삭제</div>
                                 <div class="cell warning">-</div>
                                 <div class="cell warning">장비</div>
@@ -194,7 +216,6 @@ function getdata(send_data, device, index){
     })
     .catch((error) => {
         console.error('Error:', error);
-        alert_swal("error",'오류가 발생했습니다.');
     });
 }
 ////-------------------////
@@ -207,7 +228,7 @@ function fetch_equipment() {
         token:  localStorage.getItem('token'),
         dvid:   null
     }
-    fetch(window.location.protocol+"//"+window.location.host+"/user/list", {
+    fetch(window.location.protocol+"//"+window.location.host+"/hive/list", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -290,7 +311,7 @@ function fetch_equipment_disconnect(device_id) {
                     token:  localStorage.getItem('token'),
                     dvid:   device_id
                 }
-                fetch(window.location.protocol+"//"+window.location.host+"/user/disconnect", {
+                fetch(window.location.protocol+"//"+window.location.host+"/hive/disconnect", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -324,7 +345,7 @@ function fetch_device_rename(device_id,device_name) {
             dvid:   device_id,
             name:   device_name
         }
-        fetch(window.location.protocol+"//"+window.location.host+"/user/devicerename", {
+        fetch(window.location.protocol+"//"+window.location.host+"/hive/devicerename", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -357,7 +378,7 @@ function fetch_equipment_heater(device_id,func,value) {
         value:  value
     }
     console.log(post_data);
-    fetch(window.location.protocol+"//"+window.location.host+"/user/heater", {
+    fetch(window.location.protocol+"//"+window.location.host+"/hive/heater", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
