@@ -40,7 +40,6 @@ router.post('/log', async function(req, res) {
 });
 
 router.post('/hive_set', async function(req, res) {
-    console.log(req.body);
     const   path_device = "./data/device/"+req.body.DVC;
     file_system.fileMK(""+path_device,req.body.TMP+","+req.body.RUN,"device_set.csv");
 

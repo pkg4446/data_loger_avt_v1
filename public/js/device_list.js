@@ -140,7 +140,8 @@ function temp_assist_change(temp_devid,devid) {
     }
 }
 ////-------------------////
-function getdata(send_data, device, index){
+function getdata(send_data, device){
+    const hive_num = 5;
     send_data.dvid = device[0];
     fetch(window.location.protocol+"//"+window.location.host+"/hive/config", {
         method: 'POST',
@@ -162,27 +163,48 @@ function getdata(send_data, device, index){
         const response = data.split("\r\n");
         const gorl_devid = "goal_"+device[0];
         const heat_devid = "heat_"+device[0];
-        let HTML_scrpit = `<div class="unit-info">
+        let HTML_scrpit_first  = "";
+        let HTML_scrpit_second = `<div class="unit-info">
                                 <div class="cell" onclick=device_rename("${device[0]}")>${device[1]}</div>
                                 <div class="cell">${device[0]}</div>`;
         if(response[0]!="null"){
             const device_log    = JSON.parse(response[0]);
             const device_config = JSON.parse(response[1]);
-
-            console.log(device_log);
-            console.log(device_config);
-
+            // console.log(device_log);
+            // console.log(device_config);
+            const bar_number = 5;
             const today = new Date();
             today.setHours(today.getHours()-1);
             const data_date = new Date(device_log.date);
-            HTML_scrpit += `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
-            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_scrpit += 'style="background-color:Chartreuse;"'
-            else HTML_scrpit += 'style="background-color:Yellow;"'
+
+            HTML_scrpit_second += `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
+            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_scrpit_second += 'style="background-color:Chartreuse;"'
+            else HTML_scrpit_second += 'style="background-color:Yellow;"'
 
             if(device_config.ab === '1'){
-                HTML_scrpit += ">가온 기능: ON</div>";
+                HTML_scrpit_second += ">가온 기능: ON</div>";
+
+                HTML_scrpit_first = `<div class="menu-row"><div class="cell">가온 현황</div><div class="cell">${device[1]}</div></div><div class="data-row">`;
+                for (let index = 0; index < hive_num; index++) {
+                    const bar_percent = Math.round(device_log.WK[index]/(device_log.GAP*60)*100);
+                    const bar_ratio   = (100/bar_number).toFixed(2);
+                    const bar_fill    = (bar_percent/bar_ratio).toFixed(2);
+                    HTML_scrpit_first += `<div class="progress-box"><div class="cell"><div class="progress-bars">`;
+                    for (let index_bar = 0; index_bar < bar_number; index_bar++) {
+                        if(index_bar>=bar_number-bar_fill){
+                            HTML_scrpit_first += `<div class="bar"><div class="bar-fill" style="width:100%"></div></div>`;
+                        }else{
+                            if(bar_number-bar_fill-index_bar-1 < 0){
+                                HTML_scrpit_first += `<div class="bar"><div class="bar-fill" style="width:${Math.round((bar_fill-Math.floor(bar_fill))*100)}%"></div></div>`;
+                            }else{HTML_scrpit_first += `<div class="bar"><div class="bar-fill"></div></div>`;}
+                        }
+                    }
+                    HTML_scrpit_first += `</div></div><div class="progress-title">출력: <span id="percentage">${bar_percent}</span>%</div></div>`
+                }
+                HTML_scrpit_first += "</div>";
+                document.getElementById("unit_first_"+device[0]).innerHTML  = HTML_scrpit_first;
             }else{
-                HTML_scrpit += ">가온 기능: OFF</div>";
+                HTML_scrpit_second += ">가온 기능: OFF</div>";
             }
 
             let average_value = 0;
@@ -199,21 +221,21 @@ function getdata(send_data, device, index){
                 }
             }
 
-            HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5) `;
+            HTML_scrpit_second += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5) `;
             if(average_value === average_value_check){
-                HTML_scrpit += 'style="background-color:Chartreuse;"'
+                HTML_scrpit_second += 'style="background-color:Chartreuse;"'
             }else{
-                HTML_scrpit += 'style="background-color:Yellow;"';
+                HTML_scrpit_second += 'style="background-color:Yellow;"';
             }
             
-            HTML_scrpit += `>가온 평균:<span id="${gorl_devid}">${average_value/device_config.th.length}</span>°C</div></div>`;
+            HTML_scrpit_second += `>가온 평균:<span id="${gorl_devid}">${average_value/device_config.th.length}</span>°C</div></div>`;
             if(today>data_date){
-                HTML_scrpit += `<div class="menu-row">
+                HTML_scrpit_second += `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
                                     <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
                                 </div>`;
             }
-            HTML_scrpit += `<div class="data-row">
+            HTML_scrpit_second += `<div class="data-row">
                                 <div class="cell header">벌통 번호</div>
                                 <div class="cell header">공간 온도</div>
                                 <div class="cell header">봉구 온도</div>
@@ -221,17 +243,17 @@ function getdata(send_data, device, index){
                                 <div class="cell header">가온</div>
                             </div>
                             <div onclick=page_detail("${device[0]}")>`;
-            for (let index = 0; index < 5; index++) {
-                HTML_scrpit += `<div class="data-row">
+            for (let index = 0; index < hive_num; index++) {
+                HTML_scrpit_second += `<div class="data-row">
                                     <div class="cell">${index+1}</div>
-                                    <div class="cell temp-cold">${device_log["TM"][index]}°C</div>
+                                    <div class="cell temp-air">${device_log["TM"][index]}°C</div>
                                     <div class="cell temp-warm">${device_log["IC"][index]}°C</div>
                                     <div class="cell humidity">${device_log["HM"][index]}%</div>
                                     <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index})><span id="${gorl_devid+index}">${device_config.th[index]}</span>°C</div>
                                 </div>`;
             }
         }else{
-            HTML_scrpit += `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
+            HTML_scrpit_second += `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
                                 <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5)>목표:<span id="${gorl_devid}">0</span>°C</div>
                             </div>
                             <div class="menu-row">
@@ -239,8 +261,8 @@ function getdata(send_data, device, index){
                                 <div class="cell warning">데이터가 없음</div>
                             </div>`;
         }
-        HTML_scrpit += "</div>"
-        document.getElementById("unit_"+device[0]).innerHTML = HTML_scrpit;
+        HTML_scrpit_second += "</div>"
+        document.getElementById("unit_second_"+device[0]).innerHTML = HTML_scrpit_second;
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -276,15 +298,18 @@ function fetch_equipment() {
     .then(data => {
         const devices = data.split("\r\n");
         let device_list = [];
-        let HTML_scrpit = "";
+        let HTML_scrpit_first  = "";
+        let HTML_scrpit_second = "";
         for (let index = 0; index < devices.length-1; index++) {
             const device = devices[index].split(",");
             device_list.push(device);
-            HTML_scrpit += `<div class="unit-section" id="unit_${device[0]}"></div>`;
+            HTML_scrpit_first  += `<div class="unit-section" id="unit_first_${device[0]}"></div>`;
+            HTML_scrpit_second += `<div class="unit-section" id="unit_second_${device[0]}"></div>`;
         }
-        document.getElementById('farm_section').innerHTML = HTML_scrpit;
+        document.getElementById('farm_section_first').innerHTML  = HTML_scrpit_first;
+        document.getElementById('farm_section_second').innerHTML = HTML_scrpit_second;
         for (let index = 0; index < device_list.length; index++) {
-            getdata(post_data,device_list[index],index);
+            getdata(post_data,device_list[index]);
         }
     })
     .catch(error => {
@@ -353,7 +378,7 @@ function fetch_equipment_disconnect(device_id) {
                     }else if (response.status==403) {
                         alert_swal("warning","등록된 장비가 없습니다.");
                     }else if (response.status==200) {
-                        document.getElementById(`unit_${device_id}`).innerHTML="";
+                        document.getElementById(`unit_second_${device_id}`).innerHTML="";
                         alert_swal("success","장비등록을 해제했습니다.");                        
                     }
                 })
