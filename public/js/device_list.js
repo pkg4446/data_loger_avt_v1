@@ -160,7 +160,6 @@ function getdata(send_data, device, index){
     })
     .then(data => {
         const response = data.split("\r\n");
-        console.log(response);
         const gorl_devid = "goal_"+device[0];
         const heat_devid = "heat_"+device[0];
         let HTML_scrpit = `<div class="unit-info">
@@ -169,10 +168,10 @@ function getdata(send_data, device, index){
         if(response[0]!="null"){
             const device_log    = JSON.parse(response[0]);
             const device_config = JSON.parse(response[1]);
-            if(device_config.dv != null) device_config.dv = device_config.dv.split(',');
-            if(device_config.th != null) device_config.th = device_config.th.split(',');
-            // console.log(device_log);
+
+            console.log(device_log);
             console.log(device_config);
+
             const today = new Date();
             today.setHours(today.getHours()-1);
             const data_date = new Date(device_log.date);
@@ -192,6 +191,7 @@ function getdata(send_data, device, index){
                     average_value += parseInt(device_config.th[index]);
                 }
             }
+
             let average_value_check = 0;
             if( device_config.dv != null){
                 for (let index = 0; index < device_config.dv.length-1; index++) {

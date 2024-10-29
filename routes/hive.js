@@ -217,7 +217,7 @@ router.post('/config', async function(req, res) {
                         response_added.ab = file_system.fileRead("./data/device/"+user_data.dvid,"heater_able.csv");
                     }
                     if(file_system.check("./data/device/"+user_data.dvid+"/heater_temp.csv")){
-                        response_added.th = file_system.fileRead("./data/device/"+user_data.dvid,"heater_temp.csv");
+                        response_added.th = file_system.fileRead("./data/device/"+user_data.dvid,"heater_temp.csv").split(",");
                     }
                     response += "\r\n"+JSON.stringify(response_added);
                 }else{
