@@ -61,8 +61,11 @@ function device_rename(devid) {
     }
 }
 ////-------------------////
-function goal_temp_change(gorl_devid,devid) {
+function goal_temp_change(gorl_devid,devid,index_num) {
     if(view_locker){
+        let init_value = 0;
+        if(index_num == 5 ) init_value = parseInt(document.getElementById(gorl_devid).innerText);
+        else init_value = parseInt(document.getElementById(gorl_devid+index_num).innerText);
         Swal.fire({
             title: "가온 목표온도",
             icon: "question",
@@ -76,12 +79,29 @@ function goal_temp_change(gorl_devid,devid) {
                 max: "30",
                 step: "1"
         },
-            inputValue: parseInt(document.getElementById(gorl_devid).innerText)
+            inputValue: init_value
         }).then((result) => {
             if (result.isConfirmed){
-                const temperature = result.value;
+                const value_number = 5;
+                let temperature = [];
+                if(index_num == value_number){
+                    for (let index = 0; index < value_number; index++) {
+                        temperature.push(result.value);
+                    }
+                }else{
+                    for (let index = 0; index < value_number; index++) {
+                        if(index_num == index) temperature.push(parseInt(result.value));
+                        else temperature.push(parseInt(document.getElementById(gorl_devid+index).innerText))
+                    }
+                }
+                let temperature_avg = 0;
+                for (let index = 0; index < value_number; index++) {
+                    temperature_avg += temperature[index];
+                }
+                temperature_avg = temperature_avg/value_number;
+
                 fetch_equipment_heater(devid,true,temperature);
-                document.getElementById(gorl_devid).innerText = temperature;
+                document.getElementById(gorl_devid).innerText = temperature_avg;
             }
         });        
     }
@@ -148,13 +168,16 @@ function getdata(send_data, device, index){
                                 <div class="cell">${device[0]}</div>`;
         if(response[0]!="null"){
             const device_log    = JSON.parse(response[0]);
-            const device_config = JSON.parse(response[1]);  
-            console.log(device_log,device_config);     
+            const device_config = JSON.parse(response[1]);
+            if(device_config.dv != null) device_config.dv = device_config.dv.split(',');
+            if(device_config.th != null) device_config.th = device_config.th.split(',');
+            // console.log(device_log);
+            console.log(device_config);
             const today = new Date();
             today.setHours(today.getHours()-1);
             const data_date = new Date(device_log.date);
             HTML_scrpit += `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
-            if(device_config.dv != null && device_config.dv[0] === device_config.ab) HTML_scrpit += 'style="background-color:Chartreuse;"'
+            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_scrpit += 'style="background-color:Chartreuse;"'
             else HTML_scrpit += 'style="background-color:Yellow;"'
 
             if(device_config.ab === '1'){
@@ -163,13 +186,27 @@ function getdata(send_data, device, index){
                 HTML_scrpit += ">가온 기능: OFF</div>";
             }
 
-            HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}") `;
-            if(device_config.dv != null && device_config.dv[1] === device_config.th) HTML_scrpit += 'style="background-color:Chartreuse;"'
-            else{
-                HTML_scrpit += 'style="background-color:Yellow;"';
-                if(device_config.th == null) device_config.th = 0;
+            let average_value = 0;
+            if( device_config.th != null){
+                for (let index = 0; index < device_config.th.length; index++) {
+                    average_value += parseInt(device_config.th[index]);
+                }
             }
-            HTML_scrpit += `>가온 평균:<span id="${gorl_devid}">${device_config.th}</span>°C</div></div>`;
+            let average_value_check = 0;
+            if( device_config.dv != null){
+                for (let index = 0; index < device_config.dv.length-1; index++) {
+                    average_value_check += parseInt(device_config.dv[index]);
+                }
+            }
+
+            HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5) `;
+            if(average_value === average_value_check){
+                HTML_scrpit += 'style="background-color:Chartreuse;"'
+            }else{
+                HTML_scrpit += 'style="background-color:Yellow;"';
+            }
+            
+            HTML_scrpit += `>가온 평균:<span id="${gorl_devid}">${average_value/device_config.th.length}</span>°C</div></div>`;
             if(today>data_date){
                 HTML_scrpit += `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
@@ -190,12 +227,12 @@ function getdata(send_data, device, index){
                                     <div class="cell temp-cold">${device_log["TM"][index]}°C</div>
                                     <div class="cell temp-warm">${device_log["IC"][index]}°C</div>
                                     <div class="cell humidity">${device_log["HM"][index]}%</div>
-                                    <div class="cell humidity">${device_log["HM"][index]}%</div>
+                                    <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index})><span id="${gorl_devid+index}">${device_config.th[index]}</span>°C</div>
                                 </div>`;
             }
         }else{
             HTML_scrpit += `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
-                                <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>
+                                <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5)>목표:<span id="${gorl_devid}">0</span>°C</div>
                             </div>
                             <div class="menu-row">
                                 <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
