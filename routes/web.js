@@ -33,9 +33,10 @@ router.get('/connect', async function(req, res) {
 });
 
 router.get('/select', async function(req, res) {
-    const css = html.css("main") + html.css("list");
-    const js  = html.js("device_list");
-    let web_page = html.page("device_list",css,js);
+    const css = html.css("main") + html.css("log");
+    let   js  = html.js("device_log");
+          js += `<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>`;
+    let web_page = html.page("device_log",css,js);
     res.status(201).send(web_page);
 });
 module.exports = router;

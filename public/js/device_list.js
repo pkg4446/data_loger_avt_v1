@@ -29,9 +29,10 @@ function lock_shift() {
     }
 }
 ////-------------------////
-function page_detail(devid) {
+function device_detail(devid) {
     if(view_locker){
-        console.log("page_detail: "+devid);
+        localStorage.setItem('device', devid);
+        window.location.href = '/web/select';
     }
 }
 ////-------------------////
@@ -242,7 +243,7 @@ function getdata(send_data, device){
                                 <div class="cell header">봉구 습도</div>
                                 <div class="cell header">가온</div>
                             </div>
-                            <div onclick=page_detail("${device[0]}")>`;
+                            <div onclick=device_detail("${device[0]}")>`;
             for (let index = 0; index < hive_num; index++) {
                 HTML_scrpit_second += `<div class="data-row">
                                     <div class="cell">${index+1}</div>

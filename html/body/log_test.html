@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Graph Display</title>
+  <style>
+    /* 기본적인 바디 스타일 */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f4f4f9;
+    }
+
+    /* 그래프 컨테이너 */
+    .graph-container {
+      width: 80%;
+      max-width: 600px;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    /* 그래프 제목 */
+    .graph-title {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    /* 막대 그래프 스타일 */
+    .bar-container {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .bar {
+      width: 20%;
+      background-color: #4CAF50;
+      border-radius: 4px 4px 0 0;
+      text-align: center;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* 데이터 값 스타일 */
+    .bar-value {
+      padding-top: 5px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="graph-container">
+    <h2 class="graph-title">Simple Bar Graph</h2>
+    <div class="bar-container">
+      <div class="bar" style="height: 70%;"><span class="bar-value">70%</span></div>
+      <div class="bar" style="height: 50%;"><span class="bar-value">50%</span></div>
+      <div class="bar" style="height: 90%;"><span class="bar-value">90%</span></div>
+      <div class="bar" style="height: 60%;"><span class="bar-value">60%</span></div>
+      <div class="bar" style="height: 80%;"><span class="bar-value">80%</span></div>
+    </div>
+  </div>
+</body>
+</html>
