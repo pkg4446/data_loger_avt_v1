@@ -89,9 +89,9 @@ function goal_temp_change(gorl_devid,devid) {
 ////-------------------////
 function temp_assist_change(temp_devid,devid) {
     if(view_locker){
-        const heat_text = "가온기능: ";
+        const heat_text = "가온 기능: ";
         Swal.fire({
-            title: "가온기능",
+            title: "가온 기능",
             icon: "question",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
@@ -104,7 +104,7 @@ function temp_assist_change(temp_devid,devid) {
                 fetch_equipment_heater(devid,false,1);
                 Swal.fire({
                     title: "ON",
-                    text: "가온기능을 사용합니다.",
+                    text: "가온 기능을 사용합니다.",
                     icon: "success"
                 });
                 } else if(result.dismiss === "cancel"){
@@ -112,7 +112,7 @@ function temp_assist_change(temp_devid,devid) {
                 fetch_equipment_heater(devid,false,0);
                 Swal.fire({
                     title: "OFF",
-                    text: "가온기능을 정지합니다.",
+                    text: "가온 기능을 정지합니다.",
                     icon: "error"
                 });
             }
@@ -139,16 +139,17 @@ function getdata(send_data, device, index){
         return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
     })
     .then(data => {
-        const response = data;
+        const response = data.split("\r\n");
+        console.log(response);
         const gorl_devid = "goal_"+device[0];
         const heat_devid = "heat_"+device[0];
         let HTML_scrpit = `<div class="unit-info">
                                 <div class="cell" onclick=device_rename("${device[0]}")>${device[1]}</div>
                                 <div class="cell">${device[0]}</div>`;
-        if(response!="null"){
-            const response_data = response.split("\r\n");
-            const device_log    = JSON.parse(response_data[0]);
-            const device_config = JSON.parse(response_data[1]);            
+        if(response[0]!="null"){
+            const device_log    = JSON.parse(response[0]);
+            const device_config = JSON.parse(response[1]);  
+            console.log(device_log,device_config);     
             const today = new Date();
             today.setHours(today.getHours()-1);
             const data_date = new Date(device_log.date);
@@ -157,54 +158,48 @@ function getdata(send_data, device, index){
             else HTML_scrpit += 'style="background-color:Yellow;"'
 
             if(device_config.ab === '1'){
-                HTML_scrpit += ">가온기능: ON</div>";
+                HTML_scrpit += ">가온 기능: ON</div>";
             }else{
-                HTML_scrpit += ">가온기능: OFF</div>";
+                HTML_scrpit += ">가온 기능: OFF</div>";
             }
 
-            // HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>`;
             HTML_scrpit += `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}") `;
             if(device_config.dv != null && device_config.dv[1] === device_config.th) HTML_scrpit += 'style="background-color:Chartreuse;"'
             else{
                 HTML_scrpit += 'style="background-color:Yellow;"';
                 if(device_config.th == null) device_config.th = 0;
             }
-            HTML_scrpit += `>목표:<span id="${gorl_devid}">${device_config.th}</span>°C</div>`;
-
-            HTML_scrpit += `</div>
-                            <div class="menu-row">
+            HTML_scrpit += `>가온 평균:<span id="${gorl_devid}">${device_config.th}</span>°C</div></div>`;
+            if(today>data_date){
+                HTML_scrpit += `<div class="menu-row">
+                                    <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
+                                    <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
+                                </div>`;
+            }
+            HTML_scrpit += `<div class="data-row">
                                 <div class="cell header">벌통 번호</div>
-                                <div class="cell header">공기 온도</div>
+                                <div class="cell header">공간 온도</div>
                                 <div class="cell header">봉구 온도</div>
-                                <div class="cell header">봉구 습도</div>   
+                                <div class="cell header">봉구 습도</div>
+                                <div class="cell header">가온</div>
                             </div>
                             <div onclick=page_detail("${device[0]}")>`;
-            if(today>data_date){
-                HTML_scrpit += `<div class="data-row">
-                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비삭제</div>
-                                <div class="cell warning">마지막 통신</div>
-                                <div class="cell warning">${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일</div>
-                                <div class="cell warning">${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
-                                
-                            </div>`;
-            }
             for (let index = 0; index < 5; index++) {
                 HTML_scrpit += `<div class="data-row">
                                     <div class="cell">${index+1}</div>
-                                    <div class="cell temp-cold">${device_log["TM"+index]}°C</div>
-                                    <div class="cell temp-warm">${device_log["IC"+index]}°C</div>
-                                    <div class="cell humidity">${device_log["HM"+index]}%</div>
+                                    <div class="cell temp-cold">${device_log["TM"][index]}°C</div>
+                                    <div class="cell temp-warm">${device_log["IC"][index]}°C</div>
+                                    <div class="cell humidity">${device_log["HM"][index]}%</div>
+                                    <div class="cell humidity">${device_log["HM"][index]}%</div>
                                 </div>`;
             }
         }else{
-            HTML_scrpit += `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온기능: OFF</div>
+            HTML_scrpit += `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
                                 <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}")>목표:<span id="${gorl_devid}">20</span>°C</div>
                             </div>
                             <div class="menu-row">
-                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비삭제</div>
-                                <div class="cell warning">-</div>
-                                <div class="cell warning">장비</div>
-                                <div class="cell warning">미설치</div>
+                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
+                                <div class="cell warning">데이터가 없음</div>
                             </div>`;
         }
         HTML_scrpit += "</div>"
