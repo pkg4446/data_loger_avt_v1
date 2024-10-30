@@ -87,7 +87,8 @@ function goal_temp_change(gorl_devid,devid,index_num) {
                 let temperature = [];
                 if(index_num == value_number){
                     for (let index = 0; index < value_number; index++) {
-                        temperature.push(result.value);
+                        temperature.push(parseInt(result.value));
+                        document.getElementById(gorl_devid+index).innerText = result.value;
                     }
                 }else{
                     for (let index = 0; index < value_number; index++) {
@@ -208,11 +209,13 @@ function getdata(send_data, device){
                 HTML_scrpit_second += ">가온 기능: OFF</div>";
             }
 
-            let average_value = 0;
+            let average_value   = 0;
             if( device_config.th != null){
-                for (let index = 0; index < device_config.th.length; index++) {
+                for (let index = 0; index < hive_num; index++) {
                     average_value += parseInt(device_config.th[index]);
                 }
+            }else{
+                device_config.th = [0,0,0,0,0];
             }
 
             let average_value_check = 0;
@@ -229,7 +232,8 @@ function getdata(send_data, device){
                 HTML_scrpit_second += 'style="background-color:Yellow;"';
             }
             
-            HTML_scrpit_second += `>가온 평균:<span id="${gorl_devid}">${average_value/device_config.th.length}</span>°C</div></div>`;
+            console.log(device_config);
+            HTML_scrpit_second += `>가온 평균:<span id="${gorl_devid}">${average_value/hive_num}</span>°C</div></div>`;
             if(today>data_date){
                 HTML_scrpit_second += `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
@@ -242,14 +246,13 @@ function getdata(send_data, device){
                                 <div class="cell header">봉구 온도</div>
                                 <div class="cell header">봉구 습도</div>
                                 <div class="cell header">가온</div>
-                            </div>
-                            <div onclick=device_detail("${device[0]}")>`;
+                                </div><div>`;
             for (let index = 0; index < hive_num; index++) {
                 HTML_scrpit_second += `<div class="data-row">
-                                    <div class="cell">${index+1}</div>
-                                    <div class="cell temp-air">${device_log["TM"][index]}°C</div>
-                                    <div class="cell temp-warm">${device_log["IC"][index]}°C</div>
-                                    <div class="cell humidity">${device_log["HM"][index]}%</div>
+                                    <div class="cell"           onclick=device_detail("${device[0]}")>${index+1}</div>
+                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}")>${device_log["TM"][index]}°C</div>
+                                    <div class="cell temp-warm" onclick=device_detail("${device[0]}")>${device_log["IC"][index]}°C</div>
+                                    <div class="cell humidity"  onclick=device_detail("${device[0]}")>${device_log["HM"][index]}%</div>
                                     <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index})><span id="${gorl_devid+index}">${device_config.th[index]}</span>°C</div>
                                 </div>`;
             }
