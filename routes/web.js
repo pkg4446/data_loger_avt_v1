@@ -4,8 +4,8 @@ const router    = express.Router();
 
 router.get('/', async function(req, res) {
     const css = html.css("main") + html.css("list");
-    let   js  = html.js("device_list");
-          js += html.js("sweetalert2");
+    let   js  = html.js("sweetalert2");
+          js += html.js("device_list");
     let web_page = html.page("device_list",css,js);
     res.status(201).send(web_page);
 });
@@ -26,16 +26,16 @@ router.get('/join', async function(req, res) {
 
 router.get('/connect', async function(req, res) {
     const css = html.css("main") + html.css("user");
-    let   js  = html.js("device_reg");
-          js += html.js("sweetalert2");
+    let   js  = html.js("sweetalert2");
+          js += html.js("device_reg");
     let web_page = html.page("device_reg",css,js);
     res.status(201).send(web_page);
 });
 
 router.get('/select', async function(req, res) {
     const css = html.css("main") + html.css("log");
-    let   js  = html.js("device_log");
-          js += `<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>`;
+    let   js  = `<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>`;
+          js += html.js("device_log");
     let web_page = html.page("device_log",css,js);
     res.status(201).send(web_page);
 });
