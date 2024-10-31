@@ -279,8 +279,7 @@ function fetch_equipment() {
     const post_data = {
         date:   [today.getFullYear(),today.getMonth(),today.getDate()],
         id:     localStorage.getItem('user'),
-        token:  localStorage.getItem('token'),
-        dvid:   null
+        token:  localStorage.getItem('token')
     }
     fetch(window.location.protocol+"//"+window.location.host+"/hive/list", {
         method: 'POST',
@@ -323,7 +322,6 @@ function fetch_equipment() {
 ////-------------------////
 function fetch_user_info() {
     // 여기에 실제 서버 URL을 입력하세요
-    const today = new Date();
     const post_data = {
         id:     localStorage.getItem('user'),
         token:  localStorage.getItem('token'),

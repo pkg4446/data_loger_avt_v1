@@ -1,20 +1,14 @@
 <main>
-    <div class="container">
-        <div class="btn" id="view_lock" onclick=lock_shift()>화면 잠금</div>
-        <div class="header-row">
-            <div class="cell header">농가 정보</div>
-            <div class="cell" id="farm_name">농장</div>
-            <div class="cell" id="user_name">이름</div>
+    <section>
+        <div class="controls">
+            <button onclick="day_change(false)">하루 전</button>
+            <input type="date" id="data_day" onchange="getdata(new Date(this.value))">
+            <button onclick="day_change(true)">하루 뒤</button>
+        </div><br>
+        <div class="dashboard">
+            <h1>🐝 온도 추세선</h1>
+            <div></div>
         </div>
-        <div class="address-row">
-            <div class="cell header">농장 주소</div>
-            <div class="cell" id="farm_addr">주소</div>
-        </div>
-        <div id="farm_section_pump">
-        </div>
-        <div id="farm_section_first">
-        </div>
-        <div id="farm_section_second">
-        </div>
-    </div>
+    </section>
+    <br><br><br>
 </main>
