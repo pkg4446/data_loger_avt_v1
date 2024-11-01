@@ -12,14 +12,16 @@ router.get('/', async function(req, res) {
 
 router.get('/login', async function(req, res) {
     const css = html.css("main") + html.css("user");
-    const js  = html.js("login");
+    let   js  = html.js("sweetalert2");
+          js += html.js("login");
     let web_page = html.page("login",css,js);
     res.status(201).send(web_page);
 });
 
 router.get('/join', async function(req, res) {
     const css = html.css("main") + html.css("user");
-    const js  = html.js("join");
+    let   js  = html.js("sweetalert2");
+          js += html.js("join");
     let web_page = html.page("join",css,js);
     res.status(201).send(web_page);
 });

@@ -31,10 +31,17 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     })
     .then(data => {
         if (data != "nodata" && data != "password" && data != "userid") {
-            alert('로그인 성공!');
             localStorage.setItem('user', userid);
             localStorage.setItem('token', data);
-            window.location.href = '/web';
+            Swal.fire({
+                position: "top",
+                icon:   "success",
+                title:  "어서 오세요.",
+                showConfirmButton: false,
+                timer:  1500
+            }).then((result) => {
+                window.location.href = '/web';
+            });
         } else {
         }
     })

@@ -27,13 +27,29 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
         }else if (response.status==406) {
             throw new Error('이미 가입된 아이디 입니다.');
         }else{
-            alert('가입 성공!');
-            window.location.href = '/web/login';
+            Swal.fire({
+                position: "top",
+                icon:   "info",
+                title:  "회원으로 가입되었습니다.",
+                showConfirmButton: false,
+                timer:  1500
+            }).then((result) => {
+                window.location.href = '/web/login';
+            });
         }
         return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
     })
     .catch((error) => {
         console.error('Error:', error);
-        alert('로그인 처리 중 오류가 발생했습니다.');
+        function alert_swal(icon,title) {
+            Swal.fire({
+                position: "top",
+                icon:   "error",
+                title:  '로그인 처리 중 오류가 발생했습니다.',
+                text:   error,
+                showConfirmButton: false,
+                timer:  1500
+            });
+        }
     });
 });
