@@ -191,7 +191,7 @@ function getdata(send_data, device){
 
                 HTML_scrpit_first = `<div class="menu-row"><div class="cell">가온 현황</div><div class="cell">${device[1]}</div></div><div class="data-row">`;
                 for (let index = 0; index < hive_num; index++) {
-                    const bar_percent = Math.round(device_log.WK[index]/(device_log.GAP*60)*100);
+                    const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);
                     const bar_ratio   = (100/bar_number).toFixed(2);
                     const bar_fill    = (bar_percent/bar_ratio).toFixed(2);
                     HTML_scrpit_first += `<div class="progress-box"><div class="cell"><div class="progress-bars">`;
