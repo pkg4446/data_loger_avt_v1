@@ -12,15 +12,15 @@ cursor: pointer;
 }
 
 .btn {
+    margin-top: 6px;
+    padding: 8px;
     border: none;
     border-radius: 8px;
-    padding: 8px;
     text-align: center;
     background-color: #e74c3c;
     color: white;
     font-weight: bold;
     cursor: pointer;
-    margin-bottom: 20px;
     transition: all 0.3s ease;
 }
 

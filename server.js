@@ -7,7 +7,7 @@ const path_user     = "./data/user";
 if(!file_system.check(path_user)) file_system.folderMK(path_user);
 
 const app   = express();
-const port  = 3001;
+const port  = 3002;
 
 app.use(express.json());
 app.use('/public',express.static(__dirname +'/public'));

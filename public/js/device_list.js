@@ -2,6 +2,7 @@ let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
 }else{
+    document.getElementById("lock_btn").innerHTML  = `<div class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</div>`;
     fetch_user_info();
     fetch_equipment();
 }
@@ -24,7 +25,7 @@ function lock_shift() {
         view_lock.style.backgroundColor = "#4ce73c";
 
     }else{
-        view_lock.innerText = "화면 잠금";
+        view_lock.innerText = "화면 잠김";
         view_lock.style.backgroundColor = "#e74c3c";
     }
 }
@@ -92,8 +93,10 @@ function goal_temp_change(gorl_devid,devid,index_num) {
                     }
                 }else{
                     for (let index = 0; index < value_number; index++) {
-                        if(index_num == index) temperature.push(parseInt(result.value));
-                        else temperature.push(parseInt(document.getElementById(gorl_devid+index).innerText))
+                        if(index_num == index){
+                            temperature.push(parseInt(result.value));
+                            document.getElementById(gorl_devid+index).innerText = result.value;
+                        }else temperature.push(parseInt(document.getElementById(gorl_devid+index).innerText))
                     }
                 }
                 let temperature_avg = 0;
@@ -167,7 +170,7 @@ function getdata(send_data, device){
         const heat_devid = "heat_"+device[0];
         let HTML_scrpit_first  = "";
         let HTML_scrpit_second = `<div class="unit-info">
-                                <div class="cell" onclick=device_rename("${device[0]}")>${device[1]}</div>
+                                <div class="cell" id="${device[0]}" onclick=device_rename("${device[0]}")>${device[1]}</div>
                                 <div class="cell">${device[0]}</div>`;
         if(response[0]!="null"){
             const device_log    = JSON.parse(response[0]);
@@ -414,7 +417,8 @@ function fetch_device_rename(device_id,device_name) {
             }else if (response.status==403) {
                 alert_swal("warning","등록된 장비가 없습니다.");
             }else if (response.status==200) {
-                alert_swal("success","장비등록을 해제했습니다.");
+                document.getElementById(`${device_id}`).innerText = device_name;
+                alert_swal("success","장비 이름을 변경했습니다.");
             }
         })
         .catch(error => {
