@@ -204,8 +204,8 @@ router.post('/config', async function(req, res) {
             if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
                 if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
                     status_code = 200;
-                    if(file_system.check("./data/device/"+user_data.dvid+"/lastest.csv")){
-                        response = file_system.fileRead("./data/device/"+user_data.dvid,"lastest.csv");
+                    if(file_system.check("./data/device/"+user_data.dvid+"/lastest.json")){
+                        response = file_system.fileRead("./data/device/"+user_data.dvid,"lastest.json");
                     }else{
                         response = "null";
                     }
@@ -258,8 +258,8 @@ router.post('/log', async function(req, res) {
                         user_data.date[2] = "0"+temp_num;
                         yesterday = "0"+(temp_num-1);
                     }
-                    if(file_system.check("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".csv")){
-                        response    = "log\r\n" + file_system.fileRead("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".csv");
+                    if(file_system.check("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".json")){
+                        response    = "log\r\n" + file_system.fileRead("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".json");
                     }else{
                         response = "null";
                     }

@@ -21,12 +21,12 @@ router.post('/log', async function(req, res) {
     
     if(!file_system.check(path_log)) file_system.folderMK(path_log);
     file_system.fileMK(path_device,IP,"ip.txt");
-    file_system.fileMK(path_device,file_content,"lastest.csv");
+    file_system.fileMK(path_device,file_content,"lastest.json");
     file_content += "\r\n";
-    if(file_system.check(path_log+"/"+filename+".csv")){
-        file_system.fileADD(path_log,file_content,filename+".csv");
+    if(file_system.check(path_log+"/"+filename+".json")){
+        file_system.fileADD(path_log,file_content,filename+".json");
     }else{
-        file_system.fileMK(path_log,file_content,filename+".csv");
+        file_system.fileMK(path_log,file_content,filename+".json");
     }
     
     let response = "set,";
