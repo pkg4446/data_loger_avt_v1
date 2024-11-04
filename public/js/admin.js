@@ -4,6 +4,16 @@ const admin_page = {
 };
 get_admin();
 ////--------------------------------------------------------------------////
+function alert_swal(icon,title) {
+    Swal.fire({
+        position: "top",
+        icon:   icon,
+        title:  title,
+        showConfirmButton: false,
+        timer:  1500
+    });
+}
+////-------------------////
 function get_admin() {
     fetch(window.location.protocol+"//"+window.location.host+"/admin/check", {
         method: 'POST',
@@ -95,7 +105,7 @@ function device_list_view(device_list) {
         for (const device_id in device_list[device_ip]) {
             let user_id = device_list[device_ip][device_id].USER;
             if(user_id == null){
-                HTML_scrpit += `<tr onclick=device_regist("${device_id}")>`;
+                HTML_scrpit += `<tr onclick=device_regist("${device_ip}","${device_id}")>`;
                 user_id      = "미등록";
             }
             else HTML_scrpit += "<tr>";
@@ -112,7 +122,7 @@ function device_list_view(device_list) {
     document.getElementById("device_table").innerHTML = HTML_scrpit;
 }
 ////-------------------////
-function device_regist(devid) {
+function device_regist(devip,devid) {
     Swal.fire({
         title: "장비 이름",
         input: "text",
@@ -130,13 +140,13 @@ function device_regist(devid) {
                     icon: "error"
                 });
             }else{
-                fetch_device_regist(devid,user_id);
+                fetch_device_regist(devip,devid,user_id);
             }
         }
     });
 }
 ////-------------------////
-function fetch_device_regist(device_id,user_id) {
+function fetch_device_regist(device_ip,device_id,user_id) {
     const post_data = {
         TOKEN:localStorage.getItem('manager'),
         dvid:   device_id,
@@ -150,18 +160,23 @@ function fetch_device_regist(device_id,user_id) {
         body: JSON.stringify(post_data)
     })
     .then(response => {
-        if (response.status==400 || response.status==401) {
-            alert_swal("error",'정보 누락');
-            window.location.href = '/web/login';
+        if (response.status==400) {
+            throw new Error("정보 누락");
+        }else if (response.status==401) {
+            throw new Error("등록된 유저가 없습니다.");
         }else if (response.status==403) {
-            alert_swal("warning","등록된 장비가 없습니다.");
+            throw new Error('관리자 계정이 새로 접속 했습니다.');
+        }else if (response.status==409) {
+            throw new Error('이미 등록된 장비입니다.');
         }else if (response.status==200) {
-            document.getElementById(`${device_id}`).innerText = device_name;
+            admin_page.device[device_ip][device_id].USER = user_id;
             alert_swal("success","장비 이름을 변경했습니다.");
+            device_list_view(admin_page.device);
         }
     })
     .catch(error => {
-        console.log(error);
+        console.error('Error:', error);
+        alert_swal("error",error);
     });
 }
 ////-------------------////
@@ -184,8 +199,8 @@ function data_list() {
         .then(data => {
             if (data != "token") {
                 const res_data = JSON.parse(data);
-                console.log(res_data);
-
+                admin_page.user   = res_data.user;
+                admin_page.device = res_data.device;
                 user_list_view(res_data.user);
                 device_list_view(res_data.device);
             } else {
@@ -193,14 +208,7 @@ function data_list() {
         })
         .catch((error) => {
             console.error('Error:', error);
-            Swal.fire({
-                position: "top",
-                icon:   "error",
-                title:  '관리자 로그인 오류가 발생했습니다.',
-                text:   error,
-                showConfirmButton: false,
-                timer:  1500
-            });
+            alert_swal("error",error);
         });
     }else{
         user_list_view(admin_page.user);
