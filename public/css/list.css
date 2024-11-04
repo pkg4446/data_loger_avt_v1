@@ -97,17 +97,6 @@ cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-footer {
-    background-color: #ffce5d;
-    color: #333;
-    text-align: center;
-    padding: 0px;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-}
-
 .progress-box {
     background: white;
     border-radius: 8px;
@@ -136,23 +125,6 @@ footer {
 }
 
 @media (max-width: 768px) {
-    .navbar .menu-links {
-        display: none;
-    }
-
-    .menu-toggle-label {
-        display: block;
-    }
-
-    .menu-toggle:checked ~ .menu-links {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .menu-links a {
-        padding: 14px;
-    }
-
     .unit-info {
         grid-template-columns: auto;
     }

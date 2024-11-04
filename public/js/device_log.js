@@ -54,7 +54,6 @@ function getdata(date_now){
         })
     })
     .then(response => {
-        response.status
         if (response.status==400) {
             throw new Error('정보가 누락됐습니다.');
         }else if (response.status==401) {

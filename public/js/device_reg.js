@@ -63,7 +63,6 @@ function device_regist(device_type,device_id,device_name) {
         body: JSON.stringify(post_data)
     })
     .then(response => {
-        response.status
         if (response.status==400 || response.status==401) {
             alert_swal("error",'로그인 정보가 없습니다.');
             window.location.href = '/web/login';

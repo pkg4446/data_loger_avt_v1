@@ -1,5 +1,5 @@
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
-    document.getElementById('login').textContent = "로그인";
+    document.getElementById('login').textContent = "접속";
 }
 document.getElementById('userForm').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -19,7 +19,6 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
         })
     })
     .then(response => {
-        response.status
         if (response.status==400) {
             throw new Error('아이디 또는 비밀번호가 누락됐습니다.');
         }else if (response.status==403) {
@@ -41,15 +40,13 @@ document.getElementById('userForm').addEventListener('submit', function(event) {
     })
     .catch((error) => {
         console.error('Error:', error);
-        function alert_swal(icon,title) {
-            Swal.fire({
-                position: "top",
-                icon:   "error",
-                title:  '로그인 처리 중 오류가 발생했습니다.',
-                text:   error,
-                showConfirmButton: false,
-                timer:  1500
-            });
-        }
+        Swal.fire({
+            position: "top",
+            icon:   "error",
+            title:  '회원가입 중 오류가 발생했습니다.',
+            text:   error,
+            showConfirmButton: false,
+            timer:  1500
+        });
     });
 });

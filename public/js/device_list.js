@@ -156,7 +156,6 @@ function getdata(send_data, device){
         body: JSON.stringify(send_data)
     })
     .then(response => {
-        response.status
         if (response.status==400 || response.status==401) {
             alert_swal("error",'로그인 정보가 없습니다.');
         }else if (response.status==403) {

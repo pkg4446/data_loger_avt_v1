@@ -59,7 +59,7 @@ router.post('/join', async function(req, res) {
             file_system.folderMK(path_user);
             const randombyte = crypto.randomBytes(4).toString('hex');
             let file_content = randombyte+","+crypto.createHash("sha256").update(join_data.pass+randombyte).digest("base64")+","+(new Date())+","+
-            join_data.name+","+join_data.farm+","+join_data.addr+","+join_data.tel+"\r\n";
+            join_data.name+","+join_data.farm+","+join_data.addr+","+join_data.tel;
             file_system.fileMK(path_user,file_content,"config.csv");
         }
     }

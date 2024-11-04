@@ -10,6 +10,14 @@ router.get('/', async function(req, res) {
     res.status(201).send(web_page);
 });
 
+router.get('/admin', async function(req, res) {
+    const css = html.css("main") + html.css("admin");
+    let   js  = html.js("sweetalert2");
+          js += html.js("admin");
+    let web_page = html.page("admin",css,js);
+    res.status(201).send(web_page);
+});
+
 router.get('/login', async function(req, res) {
     const css = html.css("main") + html.css("user");
     let   js  = html.js("sweetalert2");
