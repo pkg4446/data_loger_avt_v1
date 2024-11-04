@@ -28,7 +28,8 @@ function day_change(flage){
     }
     document.getElementById('data_day').value = data_day.toISOString().substring(0, 10);
     const date_data = date_parser(data_day);
-    if(new Date().toISOString().substring(0, 10) === document.getElementById('data_day').value || temperatures[date_data] === undefined){
+
+    if(temperatures[date_data] === undefined){
         getdata(data_day);
     }else{
         echarts_draw(temperatures[date_data]);

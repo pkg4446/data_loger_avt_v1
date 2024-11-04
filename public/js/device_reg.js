@@ -73,7 +73,16 @@ function device_regist(device_type,device_id,device_name) {
             alert_swal("error",'이미 누군가 등록한 장비입니다.');
         }else{
             if(device_type&&document.getElementById(`list_${device_id}`)) document.getElementById(`list_${device_id}`).innerText="";
-            alert_swal("success",'장비가 등록되었습니다.');
+            Swal.fire({
+                position: "top",
+                icon:   "success",
+                title:  "장비가 등록되었습니다.",
+                showConfirmButton: false,
+                timer:  1500
+            }).then(()=>{
+                document.getElementById('device').value = "";
+                document.getElementById('device_name').value = "";
+            });
         }
     })
     .catch((error) => {
