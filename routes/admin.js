@@ -142,4 +142,41 @@ router.post('/connect', async function(req, res) {
     res.status(status_code).send();
 });
 
+
+router.post('/disconnect', async function(req, res) {
+    let status_code = 400;
+    const admin_data = req.body;
+    if(admin_data.TOKEN!=undefined && admin_data.user!=undefined && admin_data.dvid!=undefined){
+        const path_admin  = "./data/admin";
+        const admin_token = file_system.fileRead(path_admin,"token.txt");
+        if(admin_token.TOKEN == admin_data.token){
+            const path_user   = "./data/user/"+admin_data.user;
+            const path_device = "./data/device/"+admin_data.dvid;
+
+            if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+                status_code = 200;
+                let new_list = "";
+                if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
+                if(file_system.check(path_user+"/device.csv")){
+                    const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
+                    for (let index = 0; index < list.length-1; index++) {
+                        if(list[index].split(",")[0] != user_data.dvid){
+                            new_list += list[index] + "\r\n";
+                        }
+                    }
+                }
+                file_system.fileMK(path_user,new_list,"device.csv");
+            }else{
+                status_code = 401;
+            }
+
+        }else{
+            status_code = 403;
+        }
+
+
+    }
+    res.status(status_code).send();
+});
+
 module.exports = router;

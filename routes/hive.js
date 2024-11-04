@@ -9,34 +9,28 @@ router.post('/connect', async function(req, res) {
         user_data.name = user_data.name.replaceAll(' ',"_");
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                if(file_system.check(path_device)){
-                    if(file_system.check(path_device+"/owner.txt")){
-                        status_code = 409;
-                    }else{
-                        status_code = 200;
-                        const file_content = file_system.fileRead(path_user,"device.csv");
-                        if(file_content){
-                            const devices  = file_content.split("\r\n");
-                            let device_duplication = false;
-                            for (let index = 0; index < devices.length; index++) {
-                                if(devices[index].split(",")[0] == user_data.dvid){
-                                    device_duplication = true;
-                                    break;
-                                }
-                            }
-                            if(!device_duplication) file_system.fileADD(path_user,user_data.dvid+","+user_data.name+"\r\n","device.csv");
-                        }else{
-                            file_system.fileMK(path_user,user_data.dvid+","+user_data.name+"\r\n","device.csv");
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            if(file_system.check(path_device+"/owner.txt")){
+                status_code = 409;
+            }else if(file_system.check(path_device)){
+                status_code = 200;
+                const file_content = file_system.fileRead(path_user,"device.csv");
+                if(file_content){
+                    const devices  = file_content.split("\r\n");
+                    let device_duplication = false;
+                    for (let index = 0; index < devices.length; index++) {
+                        if(devices[index].split(",")[0] == user_data.dvid){
+                            device_duplication = true;
+                            break;
                         }
-                        file_system.fileMK(path_device,user_data.id,"owner.txt")
                     }
+                    if(!device_duplication) file_system.fileADD(path_user,user_data.dvid+","+user_data.name+"\r\n","device.csv");
                 }else{
-                    status_code = 403;
+                    file_system.fileMK(path_user,user_data.dvid+","+user_data.name+"\r\n","device.csv");
                 }
+                file_system.fileMK(path_device,user_data.id,"owner.txt")
             }else{
-                status_code = 401;
+                status_code = 403;
             }
         }else{
             status_code = 401;
@@ -51,27 +45,19 @@ router.post('/disconnect', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                if(file_system.check(path_device)){
-                    if(file_system.check(path_device+"/owner.txt")){
-                        status_code = 200;
-                        file_system.fileDel(path_device,"owner.txt");
-                        const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
-                        let new_list = "";
-                        for (let index = 0; index < list.length-1; index++) {
-                            if(list[index].split(",")[0] != user_data.dvid){
-                                new_list += list[index] + "\r\n";
-                            }
-                        }
-                        file_system.fileMK(path_user,new_list,"device.csv");
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            status_code = 200;
+            let new_list = "";
+            if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
+            if(file_system.check(path_user+"/device.csv")){
+                const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
+                for (let index = 0; index < list.length-1; index++) {
+                    if(list[index].split(",")[0] != user_data.dvid){
+                        new_list += list[index] + "\r\n";
                     }
-                }else{
-                    status_code = 403;
                 }
-            }else{
-                status_code = 401;
             }
+            file_system.fileMK(path_user,new_list,"device.csv");
         }else{
             status_code = 401;
         }
@@ -85,22 +71,18 @@ router.post('/devicerename', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                status_code = 200;
-                const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
-                let new_list = "";
-                for (let index = 0; index < list.length-1; index++) {
-                    if(list[index].split(",")[0] === user_data.dvid){
-                        new_list += user_data.dvid+","+user_data.name+"\r\n"
-                    }else{
-                        new_list += list[index] + "\r\n";
-                    }
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            status_code = 200;
+            const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
+            let new_list = "";
+            for (let index = 0; index < list.length-1; index++) {
+                if(list[index].split(",")[0] === user_data.dvid){
+                    new_list += user_data.dvid+","+user_data.name+"\r\n"
+                }else{
+                    new_list += list[index] + "\r\n";
                 }
-                file_system.fileMK(path_user,new_list,"device.csv");
-            }else{
-                status_code = 401;
             }
+            file_system.fileMK(path_user,new_list,"device.csv");
         }else{
             status_code = 401;
         }
@@ -114,20 +96,16 @@ router.post('/heater', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                if(file_system.check(path_device)){
-                    status_code = 200;
-                    if(user_data.func){
-                        file_system.fileMK(path_device,String(user_data.value),"heater_temp.csv");
-                    }else{
-                        file_system.fileMK(path_device,String(user_data.value),"heater_able.csv");
-                    }
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            if(file_system.check(path_device)){
+                status_code = 200;
+                if(user_data.func){
+                    file_system.fileMK(path_device,String(user_data.value),"heater_temp.csv");
                 }else{
-                    status_code = 403;
+                    file_system.fileMK(path_device,String(user_data.value),"heater_able.csv");
                 }
             }else{
-                status_code = 401;
+                status_code = 403;
             }
         }else{
             status_code = 401;
@@ -142,18 +120,13 @@ router.post('/list', async function(req, res) {
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                if(file_system.check(path_user+"/device.csv")){
-                    status_code = 200;
-                    response    = file_system.fileRead(path_user,"device.csv");
-                }else{
-                    status_code = 403;
-                    response    = "device";
-                }
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            if(file_system.check(path_user+"/device.csv")){
+                status_code = 200;
+                response    = file_system.fileRead(path_user,"device.csv");
             }else{
-                status_code = 401;
-                response    = "user";
+                status_code = 403;
+                response    = "device";
             }
         }else{
             status_code = 401;
@@ -200,33 +173,28 @@ router.post('/config', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined && user_data.date!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
-                    status_code = 200;
-                    if(file_system.check("./data/device/"+user_data.dvid+"/lastest.json")){
-                        response = file_system.fileRead("./data/device/"+user_data.dvid,"lastest.json");
-                    }else{
-                        response = "null";
-                    }
-                    const response_added = {dv:null,ab:null,th:null};
-                    if(file_system.check("./data/device/"+user_data.dvid+"/device_set.csv")){
-                        response_added.dv = file_system.fileRead("./data/device/"+user_data.dvid,"device_set.csv").split(",");
-                    }
-                    if(file_system.check("./data/device/"+user_data.dvid+"/heater_able.csv")){
-                        response_added.ab = file_system.fileRead("./data/device/"+user_data.dvid,"heater_able.csv");
-                    }
-                    if(file_system.check("./data/device/"+user_data.dvid+"/heater_temp.csv")){
-                        response_added.th = file_system.fileRead("./data/device/"+user_data.dvid,"heater_temp.csv").split(",");
-                    }
-                    response += "\r\n"+JSON.stringify(response_added);
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
+                status_code = 200;
+                if(file_system.check("./data/device/"+user_data.dvid+"/lastest.json")){
+                    response = file_system.fileRead("./data/device/"+user_data.dvid,"lastest.json");
                 }else{
-                    status_code = 403;
-                    response    = "device";
+                    response = "null";
                 }
+                const response_added = {dv:null,ab:null,th:null};
+                if(file_system.check("./data/device/"+user_data.dvid+"/device_set.csv")){
+                    response_added.dv = file_system.fileRead("./data/device/"+user_data.dvid,"device_set.csv").split(",");
+                }
+                if(file_system.check("./data/device/"+user_data.dvid+"/heater_able.csv")){
+                    response_added.ab = file_system.fileRead("./data/device/"+user_data.dvid,"heater_able.csv");
+                }
+                if(file_system.check("./data/device/"+user_data.dvid+"/heater_temp.csv")){
+                    response_added.th = file_system.fileRead("./data/device/"+user_data.dvid,"heater_temp.csv").split(",");
+                }
+                response += "\r\n"+JSON.stringify(response_added);
             }else{
-                status_code = 401;
-                response    = "user";
+                status_code = 403;
+                response    = "device";
             }
         }else{
             status_code = 401;
@@ -243,33 +211,28 @@ router.post('/log', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined && user_data.date!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt")){
-            if(file_system.check(path_user) && file_system.fileRead(path_user,"login.txt")==user_data.token){
-                if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
-                    status_code = 200;
-                    response    = "ok";
-                    if(user_data.date[1]<10){
-                        const temp_num = user_data.date[1];
-                        user_data.date[1] = "0"+temp_num;
-                    }
-                    let yesterday = user_data.date[2]-1;
-                    if(user_data.date[2]<10){
-                        const temp_num = user_data.date[2];
-                        user_data.date[2] = "0"+temp_num;
-                        yesterday = "0"+(temp_num-1);
-                    }
-                    if(file_system.check("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".json")){
-                        response    = "log\r\n" + file_system.fileRead("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".json");
-                    }else{
-                        response = "null";
-                    }
+        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+            if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
+                status_code = 200;
+                response    = "ok";
+                if(user_data.date[1]<10){
+                    const temp_num = user_data.date[1];
+                    user_data.date[1] = "0"+temp_num;
+                }
+                let yesterday = user_data.date[2]-1;
+                if(user_data.date[2]<10){
+                    const temp_num = user_data.date[2];
+                    user_data.date[2] = "0"+temp_num;
+                    yesterday = "0"+(temp_num-1);
+                }
+                if(file_system.check("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".json")){
+                    response    = "log\r\n" + file_system.fileRead("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".json");
                 }else{
-                    status_code = 403;
-                    response    = "device";
+                    response = "null";
                 }
             }else{
-                status_code = 401;
-                response    = "user";
+                status_code = 403;
+                response    = "device";
             }
         }else{
             status_code = 401;
