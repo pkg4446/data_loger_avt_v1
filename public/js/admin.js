@@ -147,7 +147,7 @@ function device_list_view(device_list) {
 ////-------------------////
 function device_regist(devip,devid) {
     Swal.fire({
-        title: "장비 이름",
+        title: "사용자 계정",
         input: "text",
         showCancelButton: true,
         inputPlaceholder: "장비를 연결할 사용자 ID를 입력하세요",
