@@ -3,7 +3,7 @@
     "short_name": "smtfYC",
     "id":"yc",
     "start_url": "/",
-    "scope": ".",
+    "scope": "/",
     "display": "fullscreen",
     "orientation": "portrait-primary",
     "background_color": "#ffffff",
@@ -12,6 +12,11 @@
     "dir": "ltr",
     "lang": "ko-KR",
     "icons": [
+      {
+        "src": "/public/favicon.ico",
+        "sizes": "64x64 32x32 16x16",
+        "type": "image/x-icon"
+      },
       {
         "src": "/public/icon-192x192.png",
         "sizes": "192x192",

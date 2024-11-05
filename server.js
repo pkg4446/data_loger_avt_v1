@@ -1,4 +1,6 @@
 const express       = require('express');
+const favicon       = require('serve-favicon');
+const path          = require('path');
 const file_system   = require('./fs_core');
 const index_router  = require('./routes');
 
@@ -10,6 +12,7 @@ const app   = express();
 const port  = 3002;
 
 app.use(express.json());
+app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use('/public',express.static(__dirname +'/public'));
 app.use('/', index_router);
 

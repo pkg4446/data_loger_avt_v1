@@ -3,6 +3,19 @@
     margin: 0 auto;
 }
 
+.btn {
+    margin-top: 6px;
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #e74c3c;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;

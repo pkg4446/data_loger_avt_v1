@@ -2,7 +2,21 @@ const admin_page = {
     user:      null,
     device:    null
 };
+document.getElementById("lock_btn").innerHTML  = `<div class="btn" id="view_lock" onclick=admin_logout()>MOD OFF</div>`;
 admin_check();
+function admin_logout() {
+    localStorage.removeItem('manager');
+    Swal.fire({
+        position: "top",
+        icon:   "info",
+        title:  '관리자 로그아웃',
+        text:   '관리자 계정이 로그아웃 되었습니다.',
+        showConfirmButton: false,
+        timer:  1500
+    }).then(() => {
+        window.location.href = '/';
+    });
+}
 ////--------------------------------------------------------------------////
 function alert_swal(icon,title) {
     Swal.fire({
