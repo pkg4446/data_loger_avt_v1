@@ -28,6 +28,21 @@ router.post('/check', async function(req, res) {
     res.status(status_code).send();
 });
 
+router.post('/superuser', async function(req, res) {
+    let status_code  = 400;
+    let response     = "fail";
+    const admin_data = req.body;
+    if(admin_data.token!=undefined){
+        const path_admin = "./data/admin";
+        const path_user  = "./data/user/" + admin_data.user_id;
+        if(token_check(admin_data.token) && file_system.check(path_user+"/login.txt")){
+            status_code = 200;
+            response = file_system.fileRead(path_user,"login.txt");
+        }
+    }
+    res.status(status_code).send();
+});
+
 router.post('/authority', async function(req, res) {
     let status_code  = 400;
     let response     = "key";
