@@ -2,7 +2,7 @@ const admin_page = {
     user:      null,
     device:    null
 };
-get_admin();
+admin_check();
 ////--------------------------------------------------------------------////
 function alert_swal(icon,title) {
     Swal.fire({
@@ -14,66 +14,89 @@ function alert_swal(icon,title) {
     });
 }
 ////-------------------////
-function get_admin() {
+function admin_login() {
+    Swal.fire({
+        position: "top",
+        icon:   "info",
+        title:  '세션이 유효하지 않습니다.',
+        text:   '관리자가 새로 접속하였거나, 토큰이 만료되었습니다.',
+        showConfirmButton: false,
+        timer:  1500
+    }).then(() => {
+        admin_check();
+    });
+}
+////-------------------////
+function admin_check() {
     fetch(window.location.protocol+"//"+window.location.host+"/admin/check", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({TOKEN:localStorage.getItem('manager')})
+        body: JSON.stringify({token:localStorage.getItem('manager')})
     })
     .then(res => {
         if (res.status==400) {
-            Swal.fire({
-                position: "top",
-                icon:   "question",
-                title:  "관리자 로그인",
-                input: "text",
-                inputPlaceholder: "관리자 KEY를 입력하세요."
-            }).then((result)=>{
-                fetch(window.location.protocol+"//"+window.location.host+"/admin/authority", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({KEY:result.value})
-                }).then(response => {
-                    if (response.status==400) {
-                        throw new Error('관리자 KEY가 누락됐습니다.');
-                    }else if (response.status==403) {
-                        throw new Error('KEY가 다릅니다.');
-                    }else if (response.status==202) {
-                        throw new Error('관리자 KEY가 변경되었습니다.');
-                    }
-                    return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
-                })
-                .then(data => {
-                    if (data != "key" && data != "fail" && data != "new") {
-                        localStorage.setItem('manager', data);
-                        Swal.fire({
-                            position: "top",
-                            icon:   "success",
-                            title:  "관리자로 접속 되었습니다.",
-                            showConfirmButton: false,
-                            timer:  1500
-                        });
-                        data_list();
-                    } else {}
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
+            admin_authority();
+        }else{
+            data_list();
+        }
+    });
+}
+////-------------------////
+function admin_authority() {
+    Swal.fire({
+        position: "top",
+        icon:   "question",
+        title:  "관리자 로그인",
+        input: "text",
+        inputPlaceholder: "관리자 KEY를 입력하세요."
+    }).then((result)=>{
+        if(result.value != "" && result.value != undefined){
+            fetch(window.location.protocol+"//"+window.location.host+"/admin/authority", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({key:result.value})
+            }).then(response => {
+                if (response.status==400) {
+                    throw new Error('관리자 KEY가 누락됐습니다.');
+                }else if (response.status==403) {
+                    throw new Error('KEY가 다릅니다.');
+                }else if (response.status==202) {
+                    throw new Error("관리자 KEY가 변경되었습니다.");
+                }
+                return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
+            })
+            .then(data => {
+                if (data != "key" && data != "fail" && data != "new") {
+                    localStorage.setItem('manager', data);
                     Swal.fire({
                         position: "top",
-                        icon:   "error",
-                        title:  '관리자 접속 오류가 발생했습니다.',
-                        text:   error,
+                        icon:   "success",
+                        title:  "관리자로 접속 되었습니다.",
                         showConfirmButton: false,
                         timer:  1500
                     });
+                    data_list();
+                } else {}
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                Swal.fire({
+                    position: "top",
+                    icon:   "error",
+                    title:  '관리자 접속 오류가 발생했습니다.',
+                    text:   error,
+                    showConfirmButton: false,
+                    timer:  1500
+                }).then(() => {
+                    admin_authority();
                 });
             });
         }else{
-            data_list();
+            admin_authority();
         }
     });
 }
@@ -105,10 +128,10 @@ function device_list_view(device_list) {
         for (const device_id in device_list[device_ip]) {
             let user_id = device_list[device_ip][device_id].USER;
             if(user_id == null){
-                HTML_scrpit += `<tr onclick=device_regist("${device_ip}","${device_id}")>`;
-                user_id      = "미등록";
+                user_id       = "미등록";
+                HTML_scrpit  += `<tr onclick=device_regist("${device_ip}","${device_id}")>`;
             }
-            else HTML_scrpit += "<tr>";
+            else HTML_scrpit += `<tr onclick=device_del("${device_ip}","${device_id}","${user_id}")>`;
             if(ip_once){
                 ip_once = false;
                 HTML_scrpit += `<td>${device_ip}</td>`;
@@ -140,19 +163,19 @@ function device_regist(devip,devid) {
                     icon: "error"
                 });
             }else{
-                fetch_device_regist(devip,devid,user_id);
+                fetch_device_change("connect",devip,devid,user_id);
             }
         }
     });
 }
 ////-------------------////
-function fetch_device_regist(device_ip,device_id,user_id) {
+function fetch_device_change(api,device_ip,device_id,user_id) {
     const post_data = {
-        TOKEN:localStorage.getItem('manager'),
+        token:localStorage.getItem('manager'),
         dvid:   device_id,
         user:   user_id
     }
-    fetch(window.location.protocol+"//"+window.location.host+"/admin/connect", {
+    fetch(window.location.protocol+"//"+window.location.host+"/admin/"+api, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -165,18 +188,63 @@ function fetch_device_regist(device_ip,device_id,user_id) {
         }else if (response.status==401) {
             throw new Error("등록된 유저가 없습니다.");
         }else if (response.status==403) {
-            throw new Error('관리자 계정이 새로 접속 했습니다.');
+            admin_login();
         }else if (response.status==409) {
             throw new Error('이미 등록된 장비입니다.');
         }else if (response.status==200) {
+            if(api == "connect"){alert_swal("success","장비를 계정에 연결했습니다.");}
+            else if(api == "disconnect"){
+                user_id = null;
+                alert_swal("info","장비연결을 해지했습니다.");
+            }
             admin_page.device[device_ip][device_id].USER = user_id;
-            alert_swal("success","장비 이름을 변경했습니다.");
             device_list_view(admin_page.device);
         }
     })
     .catch(error => {
         console.error('Error:', error);
         alert_swal("error",error);
+    });
+}
+////-------------------////
+function ascii() {
+    const type = Math.floor(Math.random()*3);
+    let ascii_dec = 0;
+    if(type == 0){
+        ascii_dec = Math.floor(Math.random()*10)+48;
+    }else{
+        ascii_dec = Math.floor(Math.random()*26);
+        if(type == 1) ascii_dec += 65;
+        else ascii_dec += 97;
+    }
+    return String.fromCharCode(ascii_dec);
+}
+////-------------------////
+function device_del(devip,devid,userid) {
+    let del_code = "";
+    for (let index = 0; index < 4; index++) {
+        del_code += ascii();
+    }
+    Swal.fire({
+        title: "연결 해제",
+        input: "text",
+        text: del_code + "를 입력하세요.",
+        showCancelButton: true,
+        inputPlaceholder: del_code,
+        confirmButtonText: "변경",
+        cancelButtonText:  "취소"
+    }).then((result) => {
+        if (result.isConfirmed){
+            if(result.value === del_code){
+                fetch_device_change("disconnect",devip,devid,userid);
+            }else{
+                Swal.fire({
+                    title: "해제 코드가 틀렸습니다.",
+                    text: del_code +" != "+result.value,
+                    icon: "error"
+                });
+            }
+        }
     });
 }
 ////-------------------////
@@ -187,12 +255,12 @@ function data_list() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({TOKEN:localStorage.getItem('manager')})
+            body: JSON.stringify({token:localStorage.getItem('manager')})
         }).then(response => {
             if (response.status==400) {
                 throw new Error('다른곳에서 관리자가 로그인 했습니다.');
             }else if (response.status==403) {
-                throw new Error('관리자 계정이 새로 접속 했습니다.');
+                admin_login();
             }
             return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
         })

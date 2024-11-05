@@ -2,6 +2,16 @@ const express       = require('express');
 const file_system   = require('../fs_core');
 const router        = express.Router();
 
+function token_check(token,user_id) {
+    let response = false;
+    const path_user = "./data/user/"+user_id;
+    if(file_system.check(path_user+"/login.txt")){
+        const user_token = file_system.fileRead(path_user,"login.txt");
+        if(user_token == token){response = true;}
+    }
+    return response;
+}
+
 router.post('/connect', async function(req, res) {
     let status_code = 400;
     const user_data = req.body;
@@ -9,7 +19,7 @@ router.post('/connect', async function(req, res) {
         user_data.name = user_data.name.replaceAll(' ',"_");
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device+"/owner.txt")){
                 status_code = 409;
             }else if(file_system.check(path_device)){
@@ -45,7 +55,7 @@ router.post('/disconnect', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             status_code = 200;
             let new_list = "";
             if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
@@ -71,7 +81,7 @@ router.post('/devicerename', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             status_code = 200;
             const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
             let new_list = "";
@@ -96,7 +106,7 @@ router.post('/heater', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device)){
                 status_code = 200;
                 if(user_data.func){
@@ -120,7 +130,7 @@ router.post('/list', async function(req, res) {
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_user+"/device.csv")){
                 status_code = 200;
                 response    = file_system.fileRead(path_user,"device.csv");
@@ -173,7 +183,7 @@ router.post('/config', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined && user_data.date!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
                 status_code = 200;
                 if(file_system.check("./data/device/"+user_data.dvid+"/lastest.json")){
@@ -211,7 +221,7 @@ router.post('/log', async function(req, res) {
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined && user_data.date!=undefined){
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
-        if(file_system.check(path_user+"/login.txt") && file_system.fileRead(path_user,"login.txt")==user_data.token){
+        if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
                 status_code = 200;
                 response    = "ok";
