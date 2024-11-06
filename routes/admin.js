@@ -1,6 +1,5 @@
 const crypto        = require("crypto");
 const express       = require('express');
-const requestIp     = require('request-ip');
 const file_system   = require('../api/fs_core');
 const memory_admin  = require('../api/memory_admin');
 const router        = express.Router();
@@ -36,6 +35,7 @@ router.post('/superuser', async function(req, res) {
     if(admin_data.token!=undefined){
         const path_user  = "./data/user/" + admin_data.userid;
         if(token_check(admin_data.token) && file_system.check(path_user+"/login.txt")){
+            const requestIp = require('request-ip');
             const IP    = requestIp.getClientIp(req);
             status_code = 200;
             response = file_system.fileRead(path_user,"login.txt");
@@ -100,7 +100,7 @@ router.post('/list_data', async function(req, res) {
         status_code = 403;
         if(token_check(admin_data.token)){
             status_code = 200;
-            response = memory_admin.data_get();
+            response = await memory_admin.data_get();
         }
     }
     res.status(status_code).send(response);

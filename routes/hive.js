@@ -1,6 +1,7 @@
 const express       = require('express');
 const file_system   = require('../api/fs_core');
 const memory_admin  = require('../api/memory_admin');
+const file_worker   = require('../worker/file_process');
 const router        = express.Router();
 
 function token_check(token,user_id) {
@@ -155,20 +156,9 @@ router.post('/list_able', async function(req, res) {
         const   path_device = "./data/device";
         if(file_system.check(path_device)){
             status_code = 200;
-            response    = "";
-            const device_list = file_system.Dir(path_device);
-            for (let index = 0; index < device_list.length; index++) {
-                if(!file_system.check(path_device+"/"+device_list[index]+"/owner.txt")){
-                    if(file_system.check(path_device+"/"+device_list[index]+"/ip.txt")){
-                        const requestIp = require('request-ip');
-                        const conn_ip   = requestIp.getClientIp(req);
-                        const device_ip = file_system.fileRead(path_device+"/"+device_list[index],"ip.txt");
-                        if(device_ip == conn_ip){
-                            response += device_list[index]+',';
-                        }else{}
-                    }else{}
-                }
-            }            
+            const requestIp = require('request-ip');
+            const conn_ip   = requestIp.getClientIp(req);
+            response = await file_worker.list_able(conn_ip);
         }else{
             status_code = 401;
             response    = "user";
@@ -224,16 +214,7 @@ router.post('/log', async function(req, res) {
             if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
                 status_code = 200;
                 response    = "ok";
-                if(user_data.date[1]<10){
-                    const temp_num = user_data.date[1];
-                    user_data.date[1] = "0"+temp_num;
-                }
-                let yesterday = user_data.date[2]-1;
-                if(user_data.date[2]<10){
-                    const temp_num = user_data.date[2];
-                    user_data.date[2] = "0"+temp_num;
-                    yesterday = "0"+(temp_num-1);
-                }
+                for (let index = 1; index < 3; index++) {if(user_data.date[index]<10){user_data.date[index] = "0"+user_data.date[index];}}
                 if(file_system.check("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".json")){
                     response    = "log\r\n" + file_system.fileRead("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".json");
                 }else{
