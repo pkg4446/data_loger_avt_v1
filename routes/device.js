@@ -1,11 +1,11 @@
 const express       = require('express');
 const file_system   = require('../api/fs_core');
+const memory_admin  = require('../api/memory_admin');
 const router        = express.Router();
 const requestIp     = require('request-ip');
 
 router.post('/log', async function(req, res) {    
     const   IP  = requestIp.getClientIp(req);
-
     const   path_device = "./data/device/"+req.body.DVC;
     const   date_now    = new Date();
     let     path_log    = path_device+"/"+date_now.getFullYear()+"/";
@@ -19,7 +19,10 @@ router.post('/log', async function(req, res) {
     filename += date_now.getDate();
     let file_content = JSON.stringify(req.body);
     
-    if(!file_system.check(path_log)) file_system.folderMK(path_log);
+    if(!file_system.check(path_log)){
+        file_system.folderMK(path_log);
+        memory_admin.data_renewal();
+    }
     file_system.fileMK(path_device,IP,"ip.txt");
     file_system.fileMK(path_device,file_content,"lastest.json");
     file_content += "\r\n";

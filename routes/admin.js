@@ -2,6 +2,7 @@ const crypto        = require("crypto");
 const express       = require('express');
 const requestIp     = require('request-ip');
 const file_system   = require('../api/fs_core');
+const memory_admin  = require('../api/memory_admin');
 const router        = express.Router();
 
 function token_check(token) {
@@ -99,33 +100,7 @@ router.post('/list_data', async function(req, res) {
         status_code = 403;
         if(token_check(admin_data.token)){
             status_code = 200;
-            const path_user   = "./data/user";
-            const path_device = "./data/device";
-            const user_list   = file_system.Dir(path_user);
-            const device_list = file_system.Dir(path_device);
-            response = {user:{},device:{}};
-            for (let index = 0; index < user_list.length; index++) {
-                const user_path = path_user+"/"+user_list[index];
-                if(file_system.check(user_path+"/config.csv")){
-                    const user_info = file_system.fileRead(user_path,"config.csv").split(",");
-                    response.user[user_list[index]] = {
-                        date:user_info[2],
-                        name:user_info[3],
-                        farm:user_info[4],
-                        addr:user_info[5],
-                        tel :user_info[6]
-                    };
-                }else{
-                    response.user[user_list[index]] = {date:null,name:null,farm:null,addr:null,tel :null};
-                }
-            }
-            for (let index = 0; index < device_list.length; index++) {
-                const device_path = path_device+"/"+device_list[index];
-                const device_ip = file_system.fileRead(device_path,"ip.txt");
-                if(response.device[device_ip] == undefined) response.device[device_ip] = {};
-                response.device[device_ip][device_list[index]] = {USER:file_system.fileRead(device_path,"owner.txt")}
-            }
-            response = JSON.stringify(response);
+            response = memory_admin.data_get();
         }
     }
     res.status(status_code).send(response);
@@ -142,6 +117,7 @@ router.post('/connect', async function(req, res) {
                 if(file_system.check(path_device+"/owner.txt")){
                     status_code = 409;
                 }else{
+                    memory_admin.data_renewal();
                     status_code = 200;
                     const file_content = file_system.fileRead(path_user,"device.csv");
                     if(file_content){
@@ -177,6 +153,7 @@ router.post('/disconnect', async function(req, res) {
             const path_user   = "./data/user/"+admin_data.user;
             const path_device = "./data/device/"+admin_data.dvid;
             if(file_system.check(path_user) && file_system.check(path_device)){
+                memory_admin.data_renewal();
                 status_code = 200;
                 let new_list = "";
                 if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
