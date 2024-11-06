@@ -1,5 +1,5 @@
 const express   = require('express');
-const html      = require('../html_viewer');
+const html      = require('../api/html_viewer');
 const router    = express.Router();
 
 router.get('/', async function(req, res) {

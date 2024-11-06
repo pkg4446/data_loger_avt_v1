@@ -28,6 +28,69 @@ function alert_swal(icon,title) {
     });
 }
 ////-------------------////
+function user_login(user_id) {
+    if(user_id == localStorage.getItem('user')){
+        alert_swal("info",user_id + "계정으로 로그인 중입니다.");
+    }else{
+        Swal.fire({
+            position: "top",
+            icon:   "question",
+            title:  user_id+" 계정으로 로그인",
+            showCancelButton: true,
+            confirmButtonText: "확인",
+            cancelButtonText:  "취소"
+        }).then((result)=>{
+            if(result.isConfirmed){
+                fetch(window.location.protocol+"//"+window.location.host+"/admin/superuser", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        token:  localStorage.getItem('manager'),
+                        userid: user_id
+                    })
+                }).then(response => {
+                    if (response.status==400) {
+                        throw new Error('관리자 TOKEN이 누락됐습니다.');
+                    }else if (response.status==403) {
+                        throw new Error('TOKEN이 유효하지 않습니다.');
+                    }
+                    return response.text(); // JSON 대신 텍스트로 응답을 읽습니다.
+                })
+                .then(data => {
+                    if (data != "fail") {
+                        localStorage.setItem('user', user_id);
+                        localStorage.setItem('token', data);
+                        Swal.fire({
+                            position: "top",
+                            icon:   "success",
+                            title:  user_id + "계정으로 로그인 되었습니다.",
+                            showConfirmButton: false,
+                            timer:  1500
+                        });
+                    } else {}
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        position: "top",
+                        icon:   "error",
+                        title:  '관리자 접속 오류가 발생했습니다.',
+                        text:   error,
+                        showConfirmButton: false,
+                        timer:  1500
+                    }).then(() => {
+                        admin_authority();
+                    });
+                });
+            }else{
+                admin_authority();
+            }
+        });
+    }
+}
+////-------------------////
 function admin_login() {
     Swal.fire({
         position: "top",
@@ -122,7 +185,7 @@ function user_list_view(user_list) {
     for (const user_id in user_list) {
         const user_info = user_list[user_id];
         const user_date = new Date(user_info.date);
-        HTML_scrpit += `<tr>
+        HTML_scrpit += `<tr onclick=user_login("${user_id}")>
             <td>${user_id}</td>
             <td>${user_info.name}</td>
             <td>${user_info.farm}</td>

@@ -1,6 +1,7 @@
 const crypto        = require("crypto");
 const express       = require('express');
-const file_system   = require('../fs_core');
+const requestIp     = require('request-ip');
+const file_system   = require('../api/fs_core');
 const router        = express.Router();
 
 function token_check(token) {
@@ -22,7 +23,6 @@ router.post('/check', async function(req, res) {
     let status_code  = 400;
     const admin_data = req.body;
     if(admin_data.token!=undefined){
-        const path_admin = "./data/admin";
         if(token_check(admin_data.token)){status_code = 200;}
     }
     res.status(status_code).send();
@@ -33,14 +33,19 @@ router.post('/superuser', async function(req, res) {
     let response     = "fail";
     const admin_data = req.body;
     if(admin_data.token!=undefined){
-        const path_admin = "./data/admin";
-        const path_user  = "./data/user/" + admin_data.user_id;
+        const path_user  = "./data/user/" + admin_data.userid;
         if(token_check(admin_data.token) && file_system.check(path_user+"/login.txt")){
+            const IP    = requestIp.getClientIp(req);
             status_code = 200;
             response = file_system.fileRead(path_user,"login.txt");
+            const login_log = new Date() + "," + IP + "\r\n";
+            if(file_system.check(path_user+"/login_log.csv")) file_system.fileADD(path_user,login_log,"login_log.csv");
+            else file_system.fileMK(path_user,login_log,"login_log.csv");
+        }else{
+            status_code = 403; 
         }
     }
-    res.status(status_code).send();
+    res.status(status_code).send(response);
 });
 
 router.post('/authority', async function(req, res) {
