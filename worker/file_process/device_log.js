@@ -7,9 +7,6 @@ parentPort.on('message', (device) => {
     const   date_now    = new Date();
     
     let path_log = path_device+"/"+date_now.getFullYear()+"/";
-    if(!file_system.check(path_log)){
-        file_system.folderMK(path_log);
-    }
     
     if(date_now.getMonth()<10) path_log += "0";
     path_log += date_now.getMonth();
@@ -17,6 +14,8 @@ parentPort.on('message', (device) => {
     if(date_now.getDate()<10) filename += "0";
     filename += date_now.getDate();
     let file_content = JSON.stringify(device);
+
+    if(!file_system.check(path_log)){file_system.folderMK(path_log);}
     
     if(file_system.check(path_device+"/ip.txt")){
         if(file_system.fileRead(path_device,"ip.txt") != device.IP) file_system.fileMK(path_device,device.IP,"ip.txt");
