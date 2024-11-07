@@ -1,5 +1,5 @@
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
-    document.getElementById('login').textContent = "접속";
+    document.getElementById('login').textContent = "로그인";
 }
 document.getElementById('userForm').addEventListener('submit', function(event) {
     event.preventDefault();
