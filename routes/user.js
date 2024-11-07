@@ -1,6 +1,7 @@
 const crypto        = require("crypto");
 const express       = require('express');
 const file_system   = require('../api/fs_core');
+const memory_admin  = require('../api/memory_admin');
 const router        = express.Router();
 
 router.post('/login', async function(req, res) {
@@ -56,11 +57,13 @@ router.post('/join', async function(req, res) {
             status_code = 406;
         }else if(join_data.pass == join_data.check){
             status_code = 200;
+            memory_admin.data_renewal(true);
             file_system.folderMK(path_user);
             const randombyte = crypto.randomBytes(4).toString('hex');
             let file_content = randombyte+","+crypto.createHash("sha256").update(join_data.pass+randombyte).digest("base64")+","+(new Date())+","+
             join_data.name+","+join_data.farm+","+join_data.addr+","+join_data.tel;
             file_system.fileMK(path_user,file_content,"config.csv");
+            file_system.fileMK(path_user,join_data.location,"location.txt");
         }
     }
     res.status(status_code).send();

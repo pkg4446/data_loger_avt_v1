@@ -25,7 +25,7 @@ router.post('/connect', async function(req, res) {
             if(file_system.check(path_device+"/owner.txt")){
                 status_code = 409;
             }else if(file_system.check(path_device)){
-                memory_admin.data_renewal();
+                memory_admin.data_renewal(false);
                 status_code = 200;
                 const file_content = file_system.fileRead(path_user,"device.csv");
                 if(file_content){
@@ -59,7 +59,7 @@ router.post('/disconnect', async function(req, res) {
         const   path_user   = "./data/user/"+user_data.id;
         const   path_device = "./data/device/"+user_data.dvid;
         if(token_check(user_data.token,user_data.id)){
-            memory_admin.data_renewal();
+            memory_admin.data_renewal(false);
             status_code = 200;
             let new_list = "";
             if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");

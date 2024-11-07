@@ -145,6 +145,17 @@ main {
     font-weight: 500;
 }
 
+.select-button {
+    padding: 10px 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 85%;
+    text-align: left;
+    position: relative;
+  }
+
 @media (max-width: 480px) {
     .submit-container {
         padding: 30px 20px;

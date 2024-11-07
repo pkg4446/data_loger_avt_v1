@@ -3,20 +3,22 @@ if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
 }
 document.getElementById('userForm').addEventListener('submit', function(event) {
     event.preventDefault();
+    const send_data = {
+        id:         document.getElementById('userid').value,
+        pass:       document.getElementById('password').value,
+        check:      document.getElementById('passcheck').value,
+        name:       document.getElementById('username').value,
+        tel:        document.getElementById('userphone').value,
+        location:   document.getElementById('location').value,
+        farm:       document.getElementById('farmname').value,
+        addr:       document.getElementById('farmaddr').value
+    };
     fetch(window.location.protocol+"//"+window.location.host+"/user/join", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            id:     document.getElementById('userid').value,
-            pass:   document.getElementById('password').value,
-            check:  document.getElementById('passcheck').value,
-            name:   document.getElementById('username').value,
-            tel:    document.getElementById('userphone').value,
-            farm:   document.getElementById('farmname').value,
-            addr:   document.getElementById('farmaddr').value
-        })
+        body: JSON.stringify(send_data)
     })
     .then(response => {
         if (response.status==400) {

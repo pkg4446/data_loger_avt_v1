@@ -6,7 +6,7 @@ const router        = express.Router();
 
 router.post('/log', async function(req, res) {    
     const path_device = "./data/device/"+req.body.DVC;
-    if(!file_system.check(path_device)) memory_admin.data_renewal();
+    if(!file_system.check(path_device)) memory_admin.data_renewal(false);
     const requestIp   = require('request-ip');
     req.body.IP  = requestIp.getClientIp(req);
     response     = await file_worker.device_log(req.body);

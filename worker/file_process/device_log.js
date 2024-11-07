@@ -31,7 +31,7 @@ parentPort.on('message', (device) => {
     
     let response = "set,";
     if(file_system.check(path_device+"/heater_temp.csv")) response += file_system.fileRead(path_device,"heater_temp.csv");
-    else response += "0";
+    else response += "3,3,3,3,3";
     response += ",";
     if(file_system.check(path_device+"/heater_able.csv")) response += file_system.fileRead(path_device,"heater_able.csv");
     else response += "0";
