@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .region {
+            fill: #e0e0e0;
+            stroke: #ffffff;
+            stroke-width: 1;
+            transition: fill 0.3s;
+        }
+        .region:hover {
+            fill: #a0a0a0;
+        }
+        .region-label {
+            font-size: 12px;
+            fill: #333;
+            text-anchor: middle;
+            font-weight: bold;
+            pointer-events: none;
+        }
+        .data-label {
+            font-size: 11px;
+            fill: #666;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+        .title {
+            text-anchor: middle;
+            font-size: 14px;
+            fill: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 600px; margin: 20px auto;">
+        <svg viewBox="0 0 270 550">
+            <!-- 제목 -->
+            <text x="150" y="20" class="title">지역별 평균 벌집 온도</text>
+            
+            <path class="region" d="M50,104 l25,-25 l45,25 -5,25 25,10 -45,60 -25,-20 -40,-70, 25,10 z"></path>
+            <text class="region-label" x="80" y="130">경기</text>
+            <text class="data-label" x="80" y="145">0</text>
+
+            <path class="region" d="M80,75 l10,-10 70,0 20,-30 70,140 10,60 -10,0 -5,-20 -20,-20 -55,-20-50,0 28,-38 -27,-10 5,-25 z"></path>
+            <text class="region-label" x="180" y="120">강원</text>
+            <text class="data-label" x="180" y="135">0</text>
+
+            <path class="region" d="M97,203 l20,-24 50,0 30,10 -60,40 0,40 10,5 -10,20 -20,0 -30,-50 z"></path>
+            <text class="region-label" x="115" y="230">충북</text>
+            <text class="data-label" x="115" y="245">0</text>
+
+            <path class="region" d="M70,185 l23,19 -10,40 30,50 -40,-10 -30,10 -10,-20 0,-50 -30,-20 60,-20 0,20z"></path>
+            <text class="region-label" x="60" y="245">충남</text>
+            <text class="data-label" x="60" y="260">0</text>
+
+            <path class="region" d="M142,230 l58,-40 25,10 15,15 7,25 13,0 0,20 -5,30 5,10 10,-10 -10,40 -90,0 -30,-20 0,-15 11,-22 -10,-5 z"></path>
+            <text class="region-label" x="200" y="260">경북</text>
+            <text class="data-label" x="200" y="275">0</text>
+
+            <path class="region" d="M138,313 l30,20 92,0 0,10 -20,30 -10,10 -20,0 -10,-10 -5,10 -20,20 -10,-5 0,-10 -20,15 -20,-31 6,-17 -5,-15 5,-20 z"></path>
+            <text class="region-label" x="180" y="355">경남</text>
+            <text class="data-label" x="180" y="370">0</text>
+
+            <path class="region" d="M28,302 l45,-15 40,10 25,0 0,13 -10,10 -5,20 5,15 -5,15 -40,0 -5,-15, -20,0 0,10 -35,0 15,-45 10,5 5,-15 -20,0 z"></path>
+            <text class="region-label" x="85" y="320">전북</text>
+            <text class="data-label" x="85" y="335">0</text>
+
+            <path class="region" d="M22,368 l40,0 0,-10 15,0 5,15 41,0 20,30 -85,55 -5,-15 -15,25 -5,-45 -10,0 z"></path>
+            <text class="region-label" x="70" y="400">전남</text>
+            <text class="data-label" x="70" y="415">0</text>
+
+            <path class="region" d="M20,520 l25,-10 15,0 10,10 -10,10 -20,10 -25,0 -5,-5 z"></path>
+            <text class="region-label" x="40" y="520">제주</text>
+            <text class="data-label" x="40" y="535">67</text>7
+
+            <text x="150" y="535" style="font-size: 10px; fill: #666;">* 2024년 11월 7일 기준</text>
+
+        </svg>
+    </div>
+
+    <script>
+        const regions = document.querySelectorAll('.region');
+        regions.forEach(region => {
+            region.addEventListener('mouseover', () => {
+                region.style.fill = '#a0a0a0';
+            });
+            region.addEventListener('mouseout', () => {
+                region.style.fill = '#e0e0e0';
+            });
+        });
+    </script>
+</body>
+</html>
