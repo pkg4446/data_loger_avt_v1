@@ -4,15 +4,15 @@ const file_system   = require("../../api/fs_core");
 parentPort.on('message', (device) => {
     const   path_device = "./data/device/"+device.DVC;
     delete  device.DVC;
-    const   date_now    = new Date();
+    device.date = new Date();
+
+    let path_log = path_device+"/"+device.date.getFullYear()+"/";
     
-    let path_log = path_device+"/"+date_now.getFullYear()+"/";
-    
-    if(date_now.getMonth()<10) path_log += "0";
-    path_log += date_now.getMonth();
+    if(device.date.getMonth()<10) path_log += "0";
+    path_log += device.date.getMonth();
     let filename = "";
-    if(date_now.getDate()<10) filename += "0";
-    filename += date_now.getDate();
+    if(device.date.getDate()<10) filename += "0";
+    filename += device.date.getDate();
     let file_content = JSON.stringify(device);
 
     if(!file_system.check(path_log)){file_system.folderMK(path_log);}
