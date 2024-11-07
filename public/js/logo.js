@@ -16,4 +16,5 @@ document.getElementById('logo').innerHTML=`
 <line x1="75" y1="18" x2="80" y2="1" stroke="black" stroke-width="3"/>
 
 <polygon points="55,100 67,110 80,100 " fill="black"/>
-</svg>`;
+</svg>
+`;
