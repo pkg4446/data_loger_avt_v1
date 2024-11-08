@@ -1,0 +1,29 @@
+.region {
+    fill: #e0e0e0;
+    stroke: #ffffff;
+    stroke-width: 1;
+    transition: all 0.5s ease;
+}
+.region:hover {
+    fill: #a0a0a0;
+    transform: translateX(1px) translateY(-2px);
+}
+.region-label {
+    font-size: 12px;
+    fill: #333;
+    text-anchor: middle;
+    font-weight: bold;
+    pointer-events: none;
+}
+.data-label {
+    font-size: 11px;
+    fill: #666;
+    text-anchor: middle;
+    pointer-events: none;
+}
+.title {
+    text-anchor: middle;
+    font-size: 14px;
+    fill: #333;
+    font-weight: bold;
+}

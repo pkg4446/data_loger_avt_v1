@@ -17,9 +17,9 @@ router.post('/hive_set', async function(req, res) {
     const path_device  = "./data/device/"+req.body.DVC;
     let   file_content = req.body.TMP+","+req.body.RUN;
     file_system.fileMK(path_device,file_content,"device_set.csv");
-    file_content += ","+new Date()+"\r\n";
+    file_content += ","+new Date();
     if(file_system.check(path_device+"/device_set_history.csv")){
-        file_system.fileADD(path_device,file_content,"device_set_history.csv");
+        file_system.fileADD(path_device,"\r\n"+file_content,"device_set_history.csv");
     }else{
         file_system.fileMK(path_device,file_content,"device_set_history.csv");
     }

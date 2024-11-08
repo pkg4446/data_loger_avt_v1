@@ -39,8 +39,8 @@ router.post('/superuser', async function(req, res) {
             const IP    = requestIp.getClientIp(req);
             status_code = 200;
             response = file_system.fileRead(path_user,"login.txt");
-            const login_log = new Date() + "," + IP + "\r\n";
-            if(file_system.check(path_user+"/login_log.csv")) file_system.fileADD(path_user,login_log,"login_log.csv");
+            const login_log = new Date() + "," + IP;
+            if(file_system.check(path_user+"/login_log.csv")) file_system.fileADD(path_user,"\r\n"+login_log,"login_log.csv");
             else file_system.fileMK(path_user,login_log,"login_log.csv");
         }else{
             status_code = 403; 
@@ -129,9 +129,9 @@ router.post('/connect', async function(req, res) {
                                 break;
                             }
                         }
-                        if(!device_duplication) file_system.fileADD(path_user,admin_data.dvid+","+"벌통"+"\r\n","device.csv");
+                        if(!device_duplication) file_system.fileADD(path_user,"\r\n"+admin_data.dvid+","+"벌통","device.csv");
                     }else{
-                        file_system.fileMK(path_user,admin_data.dvid+","+"벌통"+"\r\n","device.csv");
+                        file_system.fileMK(path_user,admin_data.dvid+","+"벌통","device.csv");
                     }
                     file_system.fileMK(path_device,admin_data.user,"owner.txt");
                 }
@@ -158,10 +158,13 @@ router.post('/disconnect', async function(req, res) {
                 let new_list = "";
                 if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
                 if(file_system.check(path_user+"/device.csv")){
-                    const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
-                    for (let index = 0; index < list.length-1; index++) {
+                    const list     = file_system.fileRead(path_user,"device.csv").split("\r\n");
+                    let line_shift = false;
+                    for (let index = 0; index < list.length; index++) {
                         if(list[index].split(",")[0] != admin_data.dvid){
-                            new_list += list[index] + "\r\n";
+                            if(line_shift) new_list += "\r\n";
+                            else line_shift = true;
+                            new_list += list[index];
                         }
                     }
                 }

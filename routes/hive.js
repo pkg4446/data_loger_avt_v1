@@ -37,9 +37,9 @@ router.post('/connect', async function(req, res) {
                             break;
                         }
                     }
-                    if(!device_duplication) file_system.fileADD(path_user,user_data.dvid+","+user_data.name+"\r\n","device.csv");
+                    if(!device_duplication) file_system.fileADD(path_user,"\r\n"+user_data.dvid+","+user_data.name,"device.csv");
                 }else{
-                    file_system.fileMK(path_user,user_data.dvid+","+user_data.name+"\r\n","device.csv");
+                    file_system.fileMK(path_user,user_data.dvid+","+user_data.name,"device.csv");
                 }
                 file_system.fileMK(path_device,user_data.id,"owner.txt")
             }else{
@@ -64,10 +64,13 @@ router.post('/disconnect', async function(req, res) {
             let new_list = "";
             if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
             if(file_system.check(path_user+"/device.csv")){
-                const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
+                const list     = file_system.fileRead(path_user,"device.csv").split("\r\n");
+                let line_shift = false;
                 for (let index = 0; index < list.length-1; index++) {
                     if(list[index].split(",")[0] != user_data.dvid){
-                        new_list += list[index] + "\r\n";
+                        if(line_shift) new_list += "\r\n";
+                        else line_shift = true;
+                        new_list += list[index];
                     }
                 }
             }
@@ -89,10 +92,11 @@ router.post('/devicerename', async function(req, res) {
             const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
             let new_list = "";
             for (let index = 0; index < list.length-1; index++) {
+                if(index != 0) new_list += "\r\n";
                 if(list[index].split(",")[0] === user_data.dvid){
-                    new_list += user_data.dvid+","+user_data.name+"\r\n"
+                    new_list += user_data.dvid+","+user_data.name;
                 }else{
-                    new_list += list[index] + "\r\n";
+                    new_list += list[index];
                 }
             }
             file_system.fileMK(path_user,new_list,"device.csv");

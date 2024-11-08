@@ -3,6 +3,7 @@ const router    = express.Router();
 
 const web       = require('./web');
 const admin     = require('./admin');
+const common    = require('./common');
 const device    = require('./device');
 const user      = require('./user');
 const hive      = require('./hive');
@@ -18,6 +19,7 @@ router.route("/")
     });
 router.use('/web',web);
 router.use('/admin',admin);
+router.use('/common',common);
 router.use('/device',device);
 router.use('/user',user);
 router.use('/hive',hive);

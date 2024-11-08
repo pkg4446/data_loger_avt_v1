@@ -22,9 +22,8 @@ parentPort.on('message', (device) => {
     }else file_system.fileMK(path_device,device.IP,"ip.txt");
 
     file_system.fileMK(path_device,file_content,"lastest.json");
-    file_content += "\r\n";
     if(file_system.check(path_log+"/"+filename+".json")){
-        file_system.fileADD(path_log,file_content,filename+".json");
+        file_system.fileADD(path_log,"\r\n"+file_content,filename+".json");
     }else{
         file_system.fileMK(path_log,file_content,filename+".json");
     }

@@ -72,7 +72,7 @@ function getdata(date_now){
         if(temperatures[date_data] === undefined) temperatures[date_data] = [];
 
         if(res[0] == "log"){
-            for (let index = 1; index < res.length-1; index++) {
+            for (let index = 1; index < res.length; index++) {
                 temperatures[date_data].push(JSON.parse(res[index]));
             }
         }else{

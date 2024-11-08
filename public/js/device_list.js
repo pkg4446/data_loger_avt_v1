@@ -167,6 +167,7 @@ function getdata(send_data, device){
         const response = data.split("\r\n");
         const gorl_devid = "goal_"+device[0];
         const heat_devid = "heat_"+device[0];
+
         let HTML_scrpit_first  = "";
         let HTML_scrpit_second = `<div class="unit-info">
                                 <div class="cell" id="${device[0]}" onclick=device_rename("${device[0]}")>${device[1]}</div>
@@ -174,8 +175,10 @@ function getdata(send_data, device){
         if(response[0]!="null"){
             const device_log    = JSON.parse(response[0]);
             const device_config = JSON.parse(response[1]);
+
             // console.log(device_log);
             // console.log(device_config);
+
             const bar_number = 5;
             const today = new Date();
             today.setHours(today.getHours()-1);
@@ -233,8 +236,7 @@ function getdata(send_data, device){
             }else{
                 HTML_scrpit_second += 'style="background-color:Yellow;"';
             }
-            
-            console.log(device_config);
+            // console.log(device_config);
             HTML_scrpit_second += `>가온 평균:<span id="${gorl_devid}">${average_value/hive_num}</span>°C</div></div>`;
             if(today>data_date){
                 HTML_scrpit_second += `<div class="menu-row">
@@ -305,7 +307,7 @@ function fetch_equipment() {
         let device_list = [];
         let HTML_scrpit_first  = "";
         let HTML_scrpit_second = "";
-        for (let index = 0; index < devices.length-1; index++) {
+        for (let index = 0; index < devices.length; index++) {
             const device = devices[index].split(",");
             device_list.push(device);
             HTML_scrpit_first  += `<div class="unit-section" id="unit_first_${device[0]}"></div>`;

@@ -1,5 +1,4 @@
 const { parentPort } = require('worker_threads');
-const file_system   = require('../../api/fs_core');
 const memory_admin  = require('../../api/memory_admin');
 
 parentPort.on('message', (data) => {
