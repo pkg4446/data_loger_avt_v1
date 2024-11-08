@@ -2,8 +2,9 @@ const { parentPort } = require('worker_threads');
 const file_system   = require("../../api/fs_core");
 
 parentPort.on('message', () => {
-    const date_now   = new Date();
-    const valid_date = new Date(date_now.setHours(date_now.getHours()-1));
+    const date_now  = new Date();
+    const valid_date = new Date(date_now.getFullYear(),date_now.getMonth(),date_now.getDate(),date_now.getHours()-1,date_now.getMinutes(),date_now.getSeconds());
+    
     let response    = "";
     let new_date    = {date:date_now};
     let path_common = "./data/common/"+date_now.getFullYear();
@@ -21,12 +22,7 @@ parentPort.on('message', () => {
     if(file_falge){
         const data_array = file_system.fileRead(path_common,filename+".json").split("\r\n");
         const last_data  = new Date(JSON.parse(data_array[data_array.length-1]).date);
-        console.log(date_now);
-        console.log(new Date(valid_date));
-        console.log(last_data);
-        console.log(valid_date > last_data); 
         if(valid_date > last_data){
-            console.log("??")
             file_update = true;
         }else{
             response = data_array[data_array.length-1];
@@ -36,7 +32,6 @@ parentPort.on('message', () => {
     }
 
     if(file_update){
-        console.log("update");
         const path_hive = "./data/device";
         const path_user = "./data/user";
         const list_user = file_system.Dir(path_user);
@@ -47,8 +42,8 @@ parentPort.on('message', () => {
                 const location = file_system.fileRead(user,"location.txt");
                 if(new_date[location] == undefined) new_date[location] = {
                     farm: 0,
-                    HM:[0,0,0,0,0],IC:[0,0,0,0,0],TM:[0,0,0,0,0],WK:[0,0,0,0,0],
-                    HM_count:[0,0,0,0,0],IC_count:[0,0,0,0,0],TM_count:[0,0,0,0,0],
+                    HM:0,IC:0,TM:0,WK:0,
+                    HM_count:0,IC_count:0,TM_count:0,
                 };
                 if(file_system.check(user+"/device.csv")){
                     new_date[location].farm += 1;
@@ -64,8 +59,8 @@ parentPort.on('message', () => {
                                         for (let _data = 0; _data < hive_data[key].length; _data++) {
                                             const element = hive_data[key][_data];
                                             if(element != "nan") {
-                                                new_date[location][key][_data] += parseFloat(element);
-                                                if(key != "WK") new_date[location][`${key}_count`][_data] += 1;
+                                                new_date[location][key] += parseFloat(element);
+                                                if(key != "WK") new_date[location][`${key}_count`] += 1;
                                             }else{}
                                         }
                                     }else{}
@@ -84,7 +79,6 @@ parentPort.on('message', () => {
         }
         response = new_date;
     }else{}
-    console.log(response);
     // 결과를 메인 스레드로 전송
     parentPort.postMessage(response);
 });
