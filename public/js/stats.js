@@ -48,7 +48,7 @@ function draw_map(data) {
     const map = JSON.parse(data.map);
     console.log(log);
     let map_html = `<svg viewBox="0 0 ${map.config.box_size[0]} ${map.config.box_size[1]}">
-                    <text x="${map.config.title[0]}" y="${map.config.title[1]}" class="title">지역별 평균 벌집 온도</text>`;
+                    <text x="${map.config.title[0]}" y="${map.config.title[1]}" class="title">지역별 평균 벌집 온습도</text>`;
     for (const region in map.geometry) {
         map_html += `<path class="region" d="M${map.geometry[region].start[0]},${map.geometry[region].start[1]} l`;
         for (let index = 0; index < map.geometry[region].point.length; index++) {
