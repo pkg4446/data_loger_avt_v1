@@ -7,7 +7,7 @@ parentPort.on('message', () => {
     
     let response    = "";
     let new_date    = {date:date_now};
-    let path_common = "./data/common/"+date_now.getFullYear();
+    let path_common = "./data/common/"+date_now.getFullYear()+"/";
 
     if(date_now.getMonth()<10) path_common += "0";
     path_common += date_now.getMonth();
@@ -20,12 +20,18 @@ parentPort.on('message', () => {
     const file_falge = file_system.check(path_common+"/"+filename+".json");
     let   file_update = false;
     if(file_falge){
-        const data_array = file_system.fileRead(path_common,filename+".json").split("\r\n");
-        const last_data  = new Date(JSON.parse(data_array[data_array.length-1]).date);
-        if(valid_date > last_data){
+        const path_device_change = "./data/common";
+        if(file_system.fileRead(path_device_change,"renew_data.txt")=="1"){
+            file_system.fileMK(path_device_change,"0","renew_data.txt");
             file_update = true;
         }else{
-            response = data_array[data_array.length-1];
+            const data_array = file_system.fileRead(path_common,filename+".json").split("\r\n");
+            const last_data  = new Date(JSON.parse(data_array[data_array.length-1]).date);
+            if(valid_date > last_data){
+                file_update = true;
+            }else{
+                response = data_array[data_array.length-1];
+            }
         }
     }else{
         file_update = true;

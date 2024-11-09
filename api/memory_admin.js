@@ -5,7 +5,10 @@ const path_admin  = "./data/admin";
 module.exports = {
     data_renewal : function(type){
         if(type)file_system.fileMK(path_admin,"1","renew_user.txt");
-        else file_system.fileMK(path_admin,"1","renew_device.txt");
+        else{
+            file_system.fileMK(path_admin,"1","renew_device.txt");
+            file_system.fileMK("./data/common","1","renew_data.txt");
+        }
     },
     data_check : function(type){
         const path_admin = "./data/admin";

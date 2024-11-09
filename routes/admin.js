@@ -34,7 +34,11 @@ router.post('/superuser', async function(req, res) {
     const admin_data = req.body;
     if(admin_data.token!=undefined){
         const path_user  = "./data/user/" + admin_data.userid;
-        if(token_check(admin_data.token) && file_system.check(path_user+"/login.txt")){
+        if(!file_system.check(path_user+"/login.txt")){
+            const loginfo   = crypto.randomBytes(16).toString('hex');
+            file_system.fileMK(path_user,loginfo,"login.txt");
+        }
+        if(token_check(admin_data.token)){
             const requestIp = require('request-ip');
             const IP    = requestIp.getClientIp(req);
             status_code = 200;

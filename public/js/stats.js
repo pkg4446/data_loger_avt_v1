@@ -55,16 +55,20 @@ function draw_map(data) {
             map_html += map.geometry[region].point[index][0]+","+map.geometry[region].point[index][1]+" ";
         }
         map_html += 'z" '
-        if((log[region] != undefined)) map_html += `style="fill: ${getColor((log[region].IC/log[region].IC_count).toFixed(2))};"`;
-        map_html += `></path>`;
-        map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]}">${map.geometry[region].name}</text>`
+        let avg_temp = "X";
+        let avg_humi = "X";
+
         if((log[region] != undefined)){
-            map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]+15}">🌡️ ${(log[region].IC/log[region].IC_count).toFixed(2)}°C</text>`
-            map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]+30}">💧 ${(log[region].HM/log[region].HM_count).toFixed(2)} %</text>`
-        }else{
-            map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]+15}">🌡️ X</text>`
-            map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]+30}">💧 X</text>`
+            if(log[region].IC_count != 0){
+                avg_temp = (log[region].IC/log[region].IC_count).toFixed(1);
+                map_html += `style="fill: ${getColor(avg_temp)};"`;
+            }     
+            if(log[region].HM_count != 0) avg_humi = (log[region].HM/log[region].HM_count).toFixed(1);
         }
+        map_html += `></path>`;
+        map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]}">${map.geometry[region].name}</text>`  
+        map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]+15}">🌡️ ${avg_temp}°C</text>`
+        map_html += `<text class="region-label" x="${map.geometry[region].text[0]}" y="${map.geometry[region].text[1]+30}">💧 ${avg_humi} %</text>`
     }
     const data_time = new Date(log.date);
     map_html += `<text x="${map.config.legend[0]}" y="${map.config.legend[1]}" style="font-size: 10px; fill: #666;">*기준: 
