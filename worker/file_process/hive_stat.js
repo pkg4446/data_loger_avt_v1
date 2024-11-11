@@ -1,7 +1,7 @@
 const { parentPort } = require('worker_threads');
 const file_system   = require("../../api/fs_core");
 
-parentPort.on('message', () => {
+parentPort.on('message', async () => {
     const date_now  = new Date();
     const valid_date = new Date(date_now.getFullYear(),date_now.getMonth(),date_now.getDate(),date_now.getHours()-1,date_now.getMinutes(),date_now.getSeconds());
     

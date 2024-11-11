@@ -1,7 +1,7 @@
 const { parentPort } = require('worker_threads');
 const file_system   = require("../../api/fs_core");
 
-parentPort.on('message', (device) => {
+parentPort.on('message', async (device) => {
     const   path_device = "./data/device/"+device.DVC;
     delete  device.DVC;
     device.date = new Date();
