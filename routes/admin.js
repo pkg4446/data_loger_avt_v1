@@ -119,7 +119,7 @@ router.post('/connect', async function(req, res) {
         if(token_check(admin_data.token)){
             status_code = await device.connect(admin_data.user,admin_data.dvid,"벌통");
         }else{
-            status_code = 401;
+            status_code = 406;
         }
     }
     res.status(status_code).send();
@@ -132,7 +132,7 @@ router.post('/disconnect', async function(req, res) {
         if(token_check(admin_data.token)){
             status_code = await device.disconnect(admin_data.user,admin_data.dvid);
         }else{
-            status_code = 403;
+            status_code = 406;
         }
     }
     res.status(status_code).send();

@@ -265,6 +265,8 @@ function fetch_device_change(api,device_ip,device_id,user_id) {
         }else if (response.status==401) {
             throw new Error("등록된 유저가 없습니다.");
         }else if (response.status==403) {
+            throw new Error("등록된 장비가 없습니다.");
+        }else if (response.status==406) {
             admin_login();
         }else if (response.status==409) {
             throw new Error('이미 등록된 장비입니다.');
