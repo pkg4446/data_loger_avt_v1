@@ -59,7 +59,6 @@ router.post('/devicerename', async function(req, res) {
                     new_list += list[index];
                 }
             }
-            console.log(list,new_list);
             file_system.fileMK(path_user,new_list,"device.csv");
         }else{
             status_code = 401;

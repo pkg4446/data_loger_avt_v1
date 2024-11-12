@@ -42,15 +42,35 @@ function getColor(temp) {
     }
     return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
 }
+////-------------------////
+function alert_swal(icon,title,text,second) {
+    Swal.fire({
+        position: "top",
+        icon:   icon,
+        title:  title,
+        text:   text,
+        showConfirmButton: false,
+        timer:  second*1000
+    });
+}
+////-------------------////
+function info_detail(region,data) {
+    if(data != undefined){
+        // `농장:${data.farm}, 센서:${(data.HM_count+data.IC_count)/2}`
+        alert_swal("info",region+" 지역",`🌡️공간온도: ${(data.TM/data.TM_count)-2}°C`,3);
+    }else{
+        alert_swal("warning",'정보 없음',region+' 지역에 설치된 장비가 없습니다.',1);
+    }
+}
 
 function draw_map(data) {
     const log = JSON.parse(data.log);
     const map = JSON.parse(data.map);
-    console.log(log);
+    console.log(log,map);
     let map_html = `<svg viewBox="0 0 ${map.config.box_size[0]} ${map.config.box_size[1]}">
                     <text x="${map.config.title[0]}" y="${map.config.title[1]}" class="title">지역별 평균 벌집 온습도</text>`;
     for (const region in map.geometry) {
-        map_html += `<path class="region" d="M${map.geometry[region].start[0]},${map.geometry[region].start[1]} l`;
+        map_html += `<path onclick=info_detail("${map.geometry[region].name}",${JSON.stringify(log[region])}) class="region" d="M${map.geometry[region].start[0]},${map.geometry[region].start[1]} l`;
         for (let index = 0; index < map.geometry[region].point.length; index++) {
             map_html += map.geometry[region].point[index][0]+","+map.geometry[region].point[index][1]+" ";
         }
