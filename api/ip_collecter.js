@@ -17,8 +17,9 @@ module.exports = {
                 }else{
                     const location = await fetch(`http://ip-api.com/json/${ip}?fields=region,regionName,city`);
                     const location_info = await location.json();
-                    if(location_info.region == 45){location_info.code = "JB"}
+                    if(location_info.region == 11){location_info.code = "GG"}
                     else if(location_info.region == 26){location_info.code = "GN"}
+                    else if(location_info.region == 45){location_info.code = "JB"}
                     ip_list[ip] = location_info;
                     file_system.fileMK(path_ip,JSON.stringify(ip_list),local_check+".json");
                 }
