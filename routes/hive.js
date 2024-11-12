@@ -66,7 +66,7 @@ router.post('/disconnect', async function(req, res) {
             if(file_system.check(path_user+"/device.csv")){
                 const list     = file_system.fileRead(path_user,"device.csv").split("\r\n");
                 let line_shift = false;
-                for (let index = 0; index < list.length-1; index++) {
+                for (let index = 0; index < list.length; index++) {
                     if(list[index].split(",")[0] != user_data.dvid){
                         if(line_shift) new_list += "\r\n";
                         else line_shift = true;
@@ -91,7 +91,7 @@ router.post('/devicerename', async function(req, res) {
             status_code = 200;
             const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
             let new_list = "";
-            for (let index = 0; index < list.length-1; index++) {
+            for (let index = 0; index < list.length; index++) {
                 if(index != 0) new_list += "\r\n";
                 if(list[index].split(",")[0] === user_data.dvid){
                     new_list += user_data.dvid+","+user_data.name;
@@ -99,6 +99,7 @@ router.post('/devicerename', async function(req, res) {
                     new_list += list[index];
                 }
             }
+            console.log(list,new_list);
             file_system.fileMK(path_user,new_list,"device.csv");
         }else{
             status_code = 401;
