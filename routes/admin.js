@@ -3,12 +3,13 @@ const express       = require('express');
 const file_system   = require('../api/fs_core');
 const memory_admin  = require('../api/memory_admin');
 const device        = require('../api/device');
+const path_data     = require('../api/path_data');
 
 const router        = express.Router();
 
 function token_check(token) {
     let response = false;
-    const path_admin = "./data/admin";
+    const path_admin = path_data.admin();
     if(file_system.check(path_admin+"/token.txt")){
         const valid_count = 999;
         const admin_token = file_system.fileRead(path_admin,"token.txt");
@@ -35,7 +36,7 @@ router.post('/superuser', async function(req, res) {
     let response     = "fail";
     const admin_data = req.body;
     if(admin_data.token!=undefined){
-        const path_user  = "./data/user/" + admin_data.userid;
+        const path_user  = path_data.user()+"/" + admin_data.userid;
         if(!file_system.check(path_user+"/login.txt")){
             const loginfo   = crypto.randomBytes(16).toString('hex');
             file_system.fileMK(path_user,loginfo,"login.txt");
@@ -60,7 +61,7 @@ router.post('/authority', async function(req, res) {
     let response     = "key";
     const admin_data = req.body;
     if(admin_data.key!=undefined){
-        const path_admin = "./data/admin";
+        const path_admin = path_data.admin();
         if(file_system.check(path_admin+"/key.txt") && file_system.check(path_admin+"/key_valid.txt")){
             const valid_count = 5;
             const admin_info  = {

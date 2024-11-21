@@ -1,9 +1,10 @@
 const file_system = require('./fs_core');
+const path_data     = require('./path_data');
 const file_worker = require('../worker/file_process');
-const path_admin  = "./data/admin";
 
 module.exports = {
     data_renewal : function(type){
+        const path_admin = path_data.admin();
         if(type)file_system.fileMK(path_admin,"1","renew_user.txt");
         else{
             file_system.fileMK(path_admin,"1","renew_device.txt");
@@ -11,7 +12,7 @@ module.exports = {
         }
     },
     data_check : function(type){
-        const path_admin = "./data/admin";
+        const path_admin = path_data.admin();
         let response  = false;
         let file_name = "device";
         if(type) file_name = "user";
@@ -27,9 +28,9 @@ module.exports = {
     },
     data_get_user : function(){
         let response = null;
-        const path_admin = "./data/admin";
-        const path_user   = "./data/user";
-        const user_list   = file_system.Dir(path_user);
+        const path_admin = path_data.admin();
+        const path_user  = path_data.user();
+        const user_list  = file_system.Dir(path_user);
         if(this.data_check(true)){
             response = {};
             file_system.fileMK(path_admin,"0","renew_user.txt");
@@ -56,8 +57,8 @@ module.exports = {
     },
     data_get_device : function(){
         let response = null;
-        const path_admin = "./data/admin";
-        const path_device = "./data/device";
+        const path_admin  = path_data.admin();
+        const path_device = path_data.device();
         const device_list = file_system.Dir(path_device);
         if(this.data_check(false)){
             response = {};

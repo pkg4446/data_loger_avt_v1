@@ -1,5 +1,6 @@
 const { parentPort } = require('worker_threads');
 const file_system   = require("../../api/fs_core");
+const path_data      = require("../../api/path_data");
 
 parentPort.on('message', async () => {
     const date_now  = new Date();
@@ -7,7 +8,7 @@ parentPort.on('message', async () => {
     
     let response    = "";
     let new_date    = {date:date_now};
-    let path_common = "./data/common/"+date_now.getFullYear()+"/";
+    let path_common = path_data.common()+"/"+date_now.getFullYear()+"/";
 
     if(date_now.getMonth()<10) path_common += "0";
     path_common += date_now.getMonth();
@@ -20,7 +21,7 @@ parentPort.on('message', async () => {
     const file_falge = file_system.check(path_common+"/"+filename+".json");
     let   file_update = false;
     if(file_falge){
-        const path_device_change = "./data/common";
+        const path_device_change = path_data.common();
         if(file_system.fileRead(path_device_change,"renew_data.txt")=="1"){
             file_system.fileMK(path_device_change,"0","renew_data.txt");
             file_update = true;
@@ -38,8 +39,8 @@ parentPort.on('message', async () => {
     }
 
     if(file_update){
-        const path_hive = "./data/device";
-        const path_user = "./data/user";
+        const path_hive = path_data.device();
+        const path_user = path_data.user();
         const list_user = file_system.Dir(path_user);
         
         for (let index = 0; index < list_user.length; index++) {

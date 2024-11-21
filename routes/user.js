@@ -3,13 +3,14 @@ const express       = require('express');
 const file_system   = require('../api/fs_core');
 const memory_admin  = require('../api/memory_admin');
 const router        = express.Router();
+const path_data     = require('../api/path_data');
 
 router.post('/login', async function(req, res) {
     let status_code  = 400;
     let response     = "nodata";
     const login_data = req.body;
     if(login_data.id!=undefined&&login_data.pass!=undefined){
-        const path_user = "./data/user/"+login_data.id;
+        const path_user = path_data.user()+"/"+login_data.id;
         if(file_system.check(path_user+"/config.csv")){
             const user_config = file_system.fileRead(path_user,"config.csv").split(",");
             if(crypto.createHash("sha256").update(login_data.pass+user_config[0]).digest("base64") == user_config[1]){
@@ -34,7 +35,7 @@ router.post('/info', async function(req, res) {
     let response     = "nodata";
     const login_data = req.body;
     if(login_data.id!=undefined&&login_data.token!=undefined){
-        const path_user = "./data/user/"+login_data.id;
+        const path_user = path_data.user()+"/"+login_data.id;
         if(file_system.check(path_user+"/config.csv") && file_system.check(path_user+"/login.txt")){
             status_code = 200;
             const user_config = file_system.fileRead(path_user,"config.csv").split(",");
@@ -52,7 +53,7 @@ router.post('/join', async function(req, res) {
     const join_data = req.body;
     if(join_data.id!=undefined && join_data.pass!=undefined && join_data.check!=undefined){
         status_code = 403;
-        const   path_user = "./data/user/"+join_data.id;
+        const   path_user = path_data.user()+"/"+join_data.id;
         if(file_system.check(path_user)){
             status_code = 406;
         }else if(join_data.pass == join_data.check){

@@ -1,11 +1,12 @@
 const file_system   = require('./fs_core');
+const path_data     = require('./path_data');
 const memory_admin  = require('./memory_admin');
 
 module.exports = {
     connect : async function(user_id,device_id,device_name){
         let status_code = 400;
-        const   path_user   = "./data/user/"+user_id;
-        const   path_device = "./data/device/"+device_id;
+        const   path_user   = path_data.user()+"/"+user_id;
+        const   path_device = path_data.device()+"/"+device_id;
         if(file_system.check(path_user)){
             if(file_system.check(path_device+"/owner.txt")){
                 status_code = 409;
@@ -38,12 +39,12 @@ module.exports = {
 
     disconnect : async function(user_id,device_id){
         let status_code = 200;
-        const   path_user   = "./data/user/"+user_id;
-        const   path_device = "./data/device/"+device_id;
+        const   path_user   = path_data.user()+"/"+user_id;
+        const   path_device = path_data.device()+"/"+device_id;
         if(file_system.check(path_user)){
             memory_admin.data_renewal(false);
-            const   path_user   = "./data/user/"+user_id;
-            const   path_device = "./data/device/"+device_id;
+            const   path_user   = path_data.user()+"/"+user_id;
+            const   path_device = path_data.device()+"/"+device_id;
             if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
             let new_list = "";
             if(file_system.check(path_user+"/device.csv")){

@@ -3,15 +3,13 @@ const favicon       = require('serve-favicon');
 const path          = require('path');
 const file_system   = require('./api/fs_core');
 const index_router  = require('./routes');
-const path_common   = "./data/common";
-const path_user     = "./data/user";
-const path_device   = "./data/device";
-const path_admin    = "./data/admin";
+const path_data     = require('./api/path_data');
 
-if(!file_system.check(path_common)) file_system.folderMK(path_common);
-if(!file_system.check(path_user))   file_system.folderMK(path_user);
-if(!file_system.check(path_device)) file_system.folderMK(path_device);
-if(!file_system.check(path_admin))  file_system.folderMK(path_admin);
+if(!file_system.check(path_data.common()))   file_system.folderMK(path_data.common());
+if(!file_system.check(path_data.user()))     file_system.folderMK(path_data.user());
+if(!file_system.check(path_data.device()))   file_system.folderMK(path_data.device());
+if(!file_system.check(path_data.admin()))    file_system.folderMK(path_data.admin());
+if(!file_system.check(path_data.firmware())) file_system.folderMK(path_data.firmware());
 
 const app   = express();
 const port  = 3002;

@@ -1,13 +1,13 @@
 const express       = require('express');
 const file_system   = require('../api/fs_core');
-const memory_admin  = require('../api/memory_admin');
 const device        = require('../api/device');
+const path_data     = require('../api/path_data');
 const file_worker   = require('../worker/file_process');
 const router        = express.Router();
 
 function token_check(token,user_id) {
     let response = false;
-    const path_user = "./data/user/"+user_id;
+    const path_user = path_data.user()+"/"+user_id;
     if(file_system.check(path_user+"/login.txt")){
         const user_token = file_system.fileRead(path_user,"login.txt");
         if(user_token == token){response = true;}
@@ -46,7 +46,7 @@ router.post('/devicerename', async function(req, res) {
     let status_code = 400;
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
-        const   path_user   = "./data/user/"+user_data.id;
+        const   path_user   = path_data.user()+"/"+user_data.id;
         if(token_check(user_data.token,user_data.id)){
             status_code = 200;
             const list   = file_system.fileRead(path_user,"device.csv").split("\r\n");
@@ -71,7 +71,7 @@ router.post('/heater', async function(req, res) {
     let status_code = 400;
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined){
-        const   path_device = "./data/device/"+user_data.dvid;
+        const   path_device = path_data.device()+"/"+user_data.dvid;
         if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device)){
                 status_code = 200;
@@ -95,7 +95,7 @@ router.post('/list', async function(req, res) {
     let response    = "nodata";
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined){
-        const   path_user   = "./data/user/"+user_data.id;
+        const   path_user   = path_data.user()+"/"+user_data.id;
         if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_user+"/device.csv")){
                 status_code = 200;
@@ -117,7 +117,7 @@ router.post('/list_able', async function(req, res) {
     let response    = "nodata";
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined){
-        const   path_device = "./data/device";
+        const   path_device = path_data.device();
         if(file_system.check(path_device)){
             status_code = 200;
             const requestIp = require('request-ip');
@@ -136,24 +136,24 @@ router.post('/config', async function(req, res) {
     let response    = "nodata";
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined && user_data.date!=undefined){
-        const   path_device = "./data/device/"+user_data.dvid;
+        const   path_device = path_data.device()+"/"+user_data.dvid;
         if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
                 status_code = 200;
-                if(file_system.check("./data/device/"+user_data.dvid+"/lastest.json")){
-                    response = file_system.fileRead("./data/device/"+user_data.dvid,"lastest.json");
+                if(file_system.check(path_data.device()+"/"+user_data.dvid+"/lastest.json")){
+                    response = file_system.fileRead(path_data.device()+"/"+user_data.dvid,"lastest.json");
                 }else{
                     response = "null";
                 }
                 const response_added = {dv:null,ab:null,th:null};
-                if(file_system.check("./data/device/"+user_data.dvid+"/device_set.csv")){
-                    response_added.dv = file_system.fileRead("./data/device/"+user_data.dvid,"device_set.csv").split(",");
+                if(file_system.check(path_data.device()+"/"+user_data.dvid+"/device_set.csv")){
+                    response_added.dv = file_system.fileRead(path_data.device()+"/"+user_data.dvid,"device_set.csv").split(",");
                 }
-                if(file_system.check("./data/device/"+user_data.dvid+"/heater_able.csv")){
-                    response_added.ab = file_system.fileRead("./data/device/"+user_data.dvid,"heater_able.csv");
+                if(file_system.check(path_data.device()+"/"+user_data.dvid+"/heater_able.csv")){
+                    response_added.ab = file_system.fileRead(path_data.device()+"/"+user_data.dvid,"heater_able.csv");
                 }
-                if(file_system.check("./data/device/"+user_data.dvid+"/heater_temp.csv")){
-                    response_added.th = file_system.fileRead("./data/device/"+user_data.dvid,"heater_temp.csv").split(",");
+                if(file_system.check(path_data.device()+"/"+user_data.dvid+"/heater_temp.csv")){
+                    response_added.th = file_system.fileRead(path_data.device()+"/"+user_data.dvid,"heater_temp.csv").split(",");
                 }
                 response += "\r\n"+JSON.stringify(response_added);
             }else{
@@ -173,14 +173,14 @@ router.post('/log', async function(req, res) {
     let response    = "nodata";
     const user_data = req.body;
     if(user_data.id!=undefined && user_data.token!=undefined && user_data.dvid!=undefined && user_data.date!=undefined){
-        const   path_device = "./data/device/"+user_data.dvid;
+        const   path_device = path_data.device()+"/"+user_data.dvid;
         if(token_check(user_data.token,user_data.id)){
             if(file_system.check(path_device+"/owner.txt")&&(file_system.fileRead(path_device,"owner.txt")==user_data.id)){
                 status_code = 200;
                 response    = "ok";
                 for (let index = 1; index < 3; index++) {if(user_data.date[index]<10){user_data.date[index] = "0"+user_data.date[index];}}
-                if(file_system.check("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".json")){
-                    response    = "log\r\n" + file_system.fileRead("./data/device/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".json");
+                if(file_system.check(path_data.device()+"/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1]+"/"+user_data.date[2]+".json")){
+                    response    = "log\r\n" + file_system.fileRead(path_data.device()+"/"+user_data.dvid+"/"+user_data.date[0]+"/"+user_data.date[1],user_data.date[2]+".json");
                 }else{
                     response = "null";
                 }
