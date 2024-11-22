@@ -207,18 +207,18 @@ function device_list_view(device_list) {
             let version = device_list[device_ip][device_id].VER;
             let user_id = device_list[device_ip][device_id].USER;
             if(version == null){version = "?.?.?";}
-            if(user_id == null){
-                user_id       = "미등록";
-                HTML_scrpit  += `<tr onclick=device_regist("${device_ip}","${device_id}")>`;
-            }
-            else HTML_scrpit += `<tr onclick=device_del("${device_ip}","${device_id}","${user_id}")>`;
+            if(user_id == null){user_id = "미등록";}
+            HTML_scrpit += "<tr>"
             if(ip_once){
                 ip_once = false;
                 HTML_scrpit += `<td>${device_ip}</td>`;
             }else{
                 HTML_scrpit += `<td></td>`;
             }
-            HTML_scrpit += `<td>${device_id}</td><td>${version}</td><td>${user_id}</td></tr>`;
+            HTML_scrpit += `<td>${device_id}</td><td onclick=alert("update?")>${version}</td>`;
+            if(user_id == null){HTML_scrpit  += `<td onclick=device_regist("${device_ip}","${device_id}")>`;}
+            else{HTML_scrpit += `<td onclick=device_del("${device_ip}","${device_id}","${user_id}")>`;}
+            HTML_scrpit += `${user_id}</td></tr>`;
         }
     }
     HTML_scrpit += "</tbody></table>"
