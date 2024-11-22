@@ -198,12 +198,15 @@ function user_list_view(user_list) {
     document.getElementById("user_table").innerHTML = HTML_scrpit;
 }
 function device_list_view(device_list) {
+    console.log(device_list);
     let HTML_scrpit = `<table class="data-table"><thead><tr>
-    <th>IP</th><th>ID</th><th>등록 유저</th></tr></thead><tbody>`;
+    <th>IP</th><th>ID</th><th>firmware</th><th>등록 유저</th></tr></thead><tbody>`;
     for (const device_ip in device_list) {
         let ip_once = true;
         for (const device_id in device_list[device_ip]) {
+            let version = device_list[device_ip][device_id].VER;
             let user_id = device_list[device_ip][device_id].USER;
+            if(version == null){version = "?.?.?";}
             if(user_id == null){
                 user_id       = "미등록";
                 HTML_scrpit  += `<tr onclick=device_regist("${device_ip}","${device_id}")>`;
@@ -215,7 +218,7 @@ function device_list_view(device_list) {
             }else{
                 HTML_scrpit += `<td></td>`;
             }
-            HTML_scrpit += `<td>${device_id}</td><td>${user_id}</td></tr>`;
+            HTML_scrpit += `<td>${device_id}</td><td>${version}</td><td>${user_id}</td></tr>`;
         }
     }
     HTML_scrpit += "</tbody></table>"
