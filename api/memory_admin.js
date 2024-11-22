@@ -67,7 +67,7 @@ module.exports = {
                 const device_path = path_device+"/"+device_list[index];
                 const device_ip = file_system.fileRead(device_path,"ip.txt");
                 if(response[device_ip] == undefined) response[device_ip] = {};
-                response[device_ip][device_list[index]] = {USER:file_system.fileRead(device_path,"owner.txt")}
+                response[device_ip][device_list[index]] = {USER:file_system.fileRead(device_path,"owner.txt"),VER:file_system.fileRead(device_path,"ver.txt"),}
             }
             file_system.fileMK(path_admin,JSON.stringify(response),"data_device.json");
         }else{
