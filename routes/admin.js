@@ -4,6 +4,7 @@ const file_system   = require('../api/fs_core');
 const memory_admin  = require('../api/memory_admin');
 const device        = require('../api/device');
 const path_data     = require('../api/path_data');
+const file_data     = require('../api/file_data');
 
 const router        = express.Router();
 
@@ -108,6 +109,20 @@ router.post('/list_data', async function(req, res) {
         if(token_check(admin_data.token)){
             status_code = 200;
             response = await memory_admin.data_get();
+        }
+    }
+    res.status(status_code).send(response);
+});
+
+router.post('/firmware', async function(req, res) {
+    let status_code  = 400;
+    let response     = "token";
+    const admin_data = req.body;
+    if(admin_data.token!=undefined){
+        status_code = 403;
+        if(token_check(admin_data.token)){
+            status_code = 200;
+            response = file_system.fileMK(path_data.device()+"/"+req.body.dvid,"1",file_data.firmware_update());
         }
     }
     res.status(status_code).send(response);

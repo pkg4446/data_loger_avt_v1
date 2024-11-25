@@ -288,8 +288,10 @@ function fetch_device_change(api,device_ip,device_id,user_id) {
                 user_id = null;
                 alert_swal("info","장비연결을 해지했습니다.");
             }
-            admin_page.device[device_ip][device_id].USER = user_id;
-            device_list_view(admin_page.device);
+            if(api != "firmware"){
+                admin_page.device[device_ip][device_id].USER = user_id;
+                device_list_view(admin_page.device);
+            }
         }
     })
     .catch(error => {
@@ -355,7 +357,7 @@ function firmware_update(devid) {
     }).then((result) => {
         if (result.isConfirmed){
             if(result.value === del_code){
-                //업데이트
+                fetch_device_change("firmware",null,devid,null);
             }else{
                 Swal.fire({
                     title: "해제 코드가 틀렸습니다.",

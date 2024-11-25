@@ -1,6 +1,7 @@
 const { parentPort } = require('worker_threads');
 const file_system    = require("../../api/fs_core");
 const path_data      = require("../../api/path_data");
+const file_data      = require("../../api/file_data");
 
 parentPort.on('message', async (device) => {
     const   path_device = path_data.device()+"/"+device.DVC;
@@ -29,12 +30,17 @@ parentPort.on('message', async (device) => {
         file_system.fileMK(path_log,file_content,filename+".json");
     }
     
-    let response = "set,";
-    if(file_system.check(path_device+"/heater_temp.csv")) response += file_system.fileRead(path_device,"heater_temp.csv");
-    else response += "3,3,3,3,3";
-    response += ",";
-    if(file_system.check(path_device+"/heater_able.csv")) response += file_system.fileRead(path_device,"heater_able.csv");
-    else response += "0";
+    let response = "";
+    if(file_system.fileRead(path_device,file_data.firmware_update()) == 1){
+        response = "update,";
+    }else{
+        response = "set,";
+        if(file_system.check(path_device+"/heater_temp.csv")) response += file_system.fileRead(path_device,"heater_temp.csv");
+        else response += "3,3,3,3,3";
+        response += ",";
+        if(file_system.check(path_device+"/heater_able.csv")) response += file_system.fileRead(path_device,"heater_able.csv");
+        else response += "0";
+    }
 
     // 결과를 메인 스레드로 전송
     parentPort.postMessage(response);
