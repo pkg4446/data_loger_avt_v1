@@ -32,7 +32,7 @@ parentPort.on('message', async (device) => {
     
     let response = "";
     if(file_system.fileRead(path_device,file_data.firmware_update()) == 1){
-        response = "update,";
+        response = "updt,";
     }else{
         response = "set,";
         if(file_system.check(path_device+"/heater_temp.csv")) response += file_system.fileRead(path_device,"heater_temp.csv");
