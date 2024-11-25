@@ -8,7 +8,8 @@ module.exports = {
         const device_list = memory_admin.data_get_device();
         for (const ip in device_list) {
             local_check = ip.split(".")[0];
-            if(local_check=='::1' || local_check=="192"){
+            console.log(local_check);
+            if(local_check=='ver' || local_check=='::1' || local_check=="192" ){
             }else{
                 if(!file_system.check(path_ip)){file_system.folderMK(path_ip);}
                 let ip_list = JSON.parse(file_system.fileRead(path_ip,local_check+".json"));

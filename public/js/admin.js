@@ -202,23 +202,32 @@ function device_list_view(device_list) {
     let HTML_scrpit = `<table class="data-table"><thead><tr>
     <th>IP</th><th>ID</th><th>firmware</th><th>등록 유저</th></tr></thead><tbody>`;
     for (const device_ip in device_list) {
-        let ip_once = true;
-        for (const device_id in device_list[device_ip]) {
-            let version = device_list[device_ip][device_id].VER;
-            let user_id = device_list[device_ip][device_id].USER;
-            if(version == null){version = "?.?.?";}
-            if(user_id == null){user_id = "미등록";}
-            HTML_scrpit += "<tr>"
-            if(ip_once){
-                ip_once = false;
-                HTML_scrpit += `<td>${device_ip}</td>`;
-            }else{
-                HTML_scrpit += `<td></td>`;
+        if(device_ip != "ver"){
+            let ip_once = true;
+            for (const device_id in device_list[device_ip]) {
+                let version = device_list[device_ip][device_id].VER;
+                let version_update = true;
+                let user_id = device_list[device_ip][device_id].USER;
+                if(version == null){version = "?.?.?";}
+                else if(version == device_list.ver){
+                    version_update = false;
+                    version = "latest ver";
+                }
+                if(user_id == null){user_id = "미등록";}
+                HTML_scrpit += "<tr>"
+                if(ip_once){
+                    ip_once = false;
+                    HTML_scrpit += `<td>${device_ip}</td>`;
+                }else{
+                    HTML_scrpit += `<td></td>`;
+                }
+                HTML_scrpit += `<td>${device_id}</td><td`;
+                if(version_update){HTML_scrpit += ` onclick=firmware_update("${device_id}")`;}
+                HTML_scrpit += `>${version}</td>`;
+                if(user_id == null){HTML_scrpit  += `<td onclick=device_regist("${device_ip}","${device_id}")>`;}
+                else{HTML_scrpit += `<td onclick=device_del("${device_ip}","${device_id}","${user_id}")>`;}
+                HTML_scrpit += `${user_id}</td></tr>`;
             }
-            HTML_scrpit += `<td>${device_id}</td><td onclick=alert("update?")>${version}</td>`;
-            if(user_id == null){HTML_scrpit  += `<td onclick=device_regist("${device_ip}","${device_id}")>`;}
-            else{HTML_scrpit += `<td onclick=device_del("${device_ip}","${device_id}","${user_id}")>`;}
-            HTML_scrpit += `${user_id}</td></tr>`;
         }
     }
     HTML_scrpit += "</tbody></table>"
@@ -319,6 +328,34 @@ function device_del(devip,devid,userid) {
         if (result.isConfirmed){
             if(result.value === del_code){
                 fetch_device_change("disconnect",devip,devid,userid);
+            }else{
+                Swal.fire({
+                    title: "해제 코드가 틀렸습니다.",
+                    text: del_code +" != "+result.value,
+                    icon: "error"
+                });
+            }
+        }
+    });
+}
+////-------------------////
+function firmware_update(devid) {
+    let del_code = "";
+    for (let index = 0; index < 4; index++) {
+        del_code += ascii();
+    }
+    Swal.fire({
+        title: "Firmware update",
+        input: "text",
+        text: del_code + "를 입력하세요.",
+        showCancelButton: true,
+        inputPlaceholder: del_code,
+        confirmButtonText: "확인",
+        cancelButtonText:  "취소"
+    }).then((result) => {
+        if (result.isConfirmed){
+            if(result.value === del_code){
+                //업데이트
             }else{
                 Swal.fire({
                     title: "해제 코드가 틀렸습니다.",

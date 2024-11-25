@@ -2,14 +2,15 @@ const express       = require('express');
 const file_system   = require('../api/fs_core');
 const memory_admin  = require('../api/memory_admin');
 const path_data     = require('../api/path_data');
+const file_data     = require('../api/file_data');
 const router        = express.Router();
 
 router.post('/device', async function(req, res) {
     try {
         const request = req.body;
-        const path_firmware = "./data/path_firmware";
-        if(file_system.check(path_firmware + "/device_version.txt")){
-            const version = file_system.fileRead(path_firmware,"device_version.txt").trim();
+        const path_firmware = path_data.firmware();
+        if(file_system.check(path_firmware + "/" + file_data.firmware())){
+            const version = file_system.fileRead(path_firmware,file_data.firmware()).trim();
             console.log(request,version);
             if(!file_system.check(path_data.device()+"/"+request.DVC + "/ver.txt")){
                 file_system.fileMK(path_data.device()+"/"+request.DVC,request.ver,"ver.txt");
