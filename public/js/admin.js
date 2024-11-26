@@ -185,7 +185,7 @@ function user_list_view(user_list) {
     for (const user_id in user_list) {
         const user_info = user_list[user_id];
         const user_date = new Date(user_info.date);
-        HTML_scrpit += `<tr onclick=user_login("${user_id}")>
+        HTML_scrpit += `<tr onclick=user_login("${user_id}") style="cursor:pointer;">
             <td>${user_id}</td>
             <td>${user_info.name}</td>
             <td>${user_info.farm}</td>
@@ -222,11 +222,11 @@ function device_list_view(device_list) {
                     HTML_scrpit += `<td></td>`;
                 }
                 HTML_scrpit += `<td>${device_id}</td><td`;
-                if(version_update){HTML_scrpit += ` onclick=firmware_update("${device_id}")`;}
+                if(version_update){HTML_scrpit += ` onclick=firmware_update("${device_id}") style="cursor:pointer;"`;}
                 HTML_scrpit += `>${version}</td>`;
-                if(user_id == null){HTML_scrpit  += `<td onclick=device_regist("${device_ip}","${device_id}")>`;}
-                else{HTML_scrpit += `<td onclick=device_del("${device_ip}","${device_id}","${user_id}")>`;}
-                HTML_scrpit += `${user_id}</td></tr>`;
+                if(user_id == null){HTML_scrpit  += `<td onclick=device_regist("${device_ip}","${device_id}")`;}
+                else{HTML_scrpit += `<td onclick=device_del("${device_ip}","${device_id}","${user_id}")`;}
+                HTML_scrpit += ` style="cursor:pointer;">${user_id}</td></tr>`;
             }
         }
     }

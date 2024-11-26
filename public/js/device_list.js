@@ -173,7 +173,7 @@ function getdata(send_data, device){
 
         let HTML_script_first   = "";
         let HTML_script_second  = `<div class="unit-info">
-                                <div class="cell" id="${device[0]}" onclick=device_rename("${device[0]}")>${device[1]}</div>
+                                <div class="cell" id="${device[0]}" onclick=device_rename("${device[0]}") style="cursor:pointer;">${device[1]}</div>
                                 <div class="cell">${device[0]}</div>`;
         if(response[0]!="null"){
             const device_log    = JSON.parse(response[0]);
@@ -190,8 +190,10 @@ function getdata(send_data, device){
             const data_date = new Date(device_log.date);
 
             HTML_script_second+= `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
-            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_script_second+= 'style="background-color:Chartreuse;"'
-            else HTML_script_second+= 'style="background-color:Yellow;"'
+            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_script_second+= 'style="background-color:Chartreuse'
+            else HTML_script_second+= 'style="background-color:Yellow'
+            HTML_script_second+= ';cursor:pointer;"'
+            
 
             if(device_config.ab === '1'){
                 HTML_script_second+= ">가온 기능: ON</div>";
@@ -238,14 +240,14 @@ function getdata(send_data, device){
 
             HTML_script_second+= `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5,null,${temp_correction}) `;
             if(average_value === average_value_check){
-                HTML_script_second+= 'style="background-color:Chartreuse;"'
+                HTML_script_second+= 'style="background-color:Chartreuse'
             }else{
-                HTML_script_second+= 'style="background-color:Yellow;"';
+                HTML_script_second+= 'style="background-color:Yellow';
             }
-            HTML_script_second+= `>가온 평균:<span id="${gorl_devid}">${(average_value/hive_num)-temp_correction}</span>°C</div></div>`;
+            HTML_script_second+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${(average_value/hive_num)-temp_correction}</span>°C</div></div>`;
             if(today>data_date){
                 HTML_script_second+= `<div class="menu-row">
-                                    <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
+                                    <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}') style="cursor:pointer;">장비 삭제</div>
                                     <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
                                 </div>`;
             }
@@ -258,11 +260,11 @@ function getdata(send_data, device){
                                 </div><div>`;
             for (let index = 0; index < hive_num; index++) {
                 HTML_script_second+= `<div class="data-row">
-                                    <div class="cell"           onclick=device_detail("${device[0]}")>${index+1}</div>
-                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}")>${device_log["TM"][index]-temp_correction}°C</div>
-                                    <div class="cell temp-warm" onclick=device_detail("${device[0]}")>${device_log["IC"][index]}°C</div>
-                                    <div class="cell humidity"  onclick=device_detail("${device[0]}")>${device_log["HM"][index]}%</div>
-                                    <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv},${temp_correction})><span id="${gorl_devid+index}">${device_config.th[index]-temp_correction}</span>°C</div>
+                                    <div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
+                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["TM"][index]-temp_correction}°C</div>
+                                    <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["IC"][index]}°C</div>
+                                    <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["HM"][index]}%</div>
+                                    <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv},${temp_correction}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-temp_correction}</span>°C</div>
                                 </div>`;
             }
         }else{
@@ -270,7 +272,7 @@ function getdata(send_data, device){
                                 <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5,null,${temp_correction})>목표:<span id="${gorl_devid}">0</span>°C</div>
                             </div>
                             <div class="menu-row">
-                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}')>장비 삭제</div>
+                                <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}') style="cursor:pointer;">장비 삭제</div>
                                 <div class="cell warning">데이터가 없음</div>
                             </div>`;
         }
