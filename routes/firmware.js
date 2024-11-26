@@ -41,6 +41,7 @@ router.post('/device', async function(req, res) {
                     });
                     fileStream.pipe(res);
                 }else{
+                    file_system.fileMK(path_data.device()+"/"+request.DVC,request.ver,"ver.txt");
                     return res.status(404).send("Firmware file not found");
                 }
             } else {
