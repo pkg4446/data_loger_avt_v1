@@ -8,7 +8,7 @@ parentPort.on('message', async (data) => {
         device: memory_admin.data_get_device()
     };
     const ip_check = ip_collecter.ip_get();
-    const response = JSON.stringify(server_data);
+    const response = server_data;
     // 결과를 메인 스레드로 전송
     parentPort.postMessage(response);
 });

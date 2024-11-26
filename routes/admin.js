@@ -109,6 +109,8 @@ router.post('/list_data', async function(req, res) {
         if(token_check(admin_data.token)){
             status_code = 200;
             response = await memory_admin.data_get();
+            response.device.ver = file_system.fileRead(path_data.firmware(),file_data.firmware());
+            response = JSON.stringify(response);
         }
     }
     res.status(status_code).send(response);

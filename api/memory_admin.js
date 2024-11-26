@@ -62,7 +62,7 @@ module.exports = {
         const path_device = path_data.device();
         const device_list = file_system.Dir(path_device);
         if(this.data_check(false)){
-            response = {"ver":file_system.fileRead(path_data.firmware(),file_data.firmware())};
+            response = {};
             file_system.fileMK(path_admin,"0","renew_device.txt");
             for (let index = 0; index < device_list.length; index++) {
                 const device_path = path_device+"/"+device_list[index];
