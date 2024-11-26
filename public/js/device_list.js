@@ -217,6 +217,7 @@ function getdata(send_data, device){
                 document.getElementById("unit_first_"+device[0]).innerHTML  = HTML_script_first;
             }else{
                 HTML_script_second+= ">가온 기능: OFF</div>";
+                document.getElementById("unit_first_"+device[0]).style.display = "none";
             }
 
             let average_value   = 0;
@@ -281,24 +282,64 @@ function getdata(send_data, device){
     });
 }
 ////-------------------////
-function list_shift(devices,swap_a,swap_b) {
-    let HTML_script_second = `<div class="btn" id="view_lock" style="background-color:#4ce73c;" onclick=alert("ok")>확인</div>`;
-    for (let index = 0; index < devices.length; index++) {
-        const device = devices[index].split(",");
-        console.log(device);
-        HTML_script_second += `<div class="unit-info">
-                <div class="cell" id="${device[0]}">${device[1]}</div>
-                <div class="cell">${device[0]}</div>`
-        if(index == 0)  HTML_script_second += `<div class="cell">위로</div>`
-        else            HTML_script_second += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index-1})>위로</div>`
+function list_shift(device_list,swap_a,swap_b) {
+    if(view_locker){
+        let devices = [];
+        if(swap_a != null && swap_b != null){
+            for (let index = 0; index < device_list.length; index++) {
+                if(index == swap_a){devices.push(device_list[swap_b]);}
+                else if(index == swap_b){devices.push(device_list[swap_a]);}
+                else{devices.push(device_list[index]);}
+            }
+        }else{
+            devices = device_list;
+        }
+        let HTML_script_second = "<br>";
+        for (let index = 0; index < devices.length; index++) {
+            const device = devices[index].split(",");
+            HTML_script_second += `<div class="unit-info">
+                    <div class="cell" id="${device[0]}">${device[1]}</div>
+                    <div class="cell">${device[0]}</div>`
+            if(index == 0)  HTML_script_second += `<div class="cell">위로</div>`
+            else            HTML_script_second += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index-1})>위로</div>`
+            
+            if(index == devices.length-1) HTML_script_second += `<div class="cell">아래로</div>`
+            else                          HTML_script_second += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index+1})>아래로</div>`
+            HTML_script_second += "</div>";
+        }
+        HTML_script_second += `<div class="btn" style="background-color:#4ce73c;" onclick=fetch_list_change(${JSON.stringify(devices)})>확인</div>`;
         
-        if(index == devices.length-1) HTML_script_second += `<div class="cell">아래로</div>`
-        else                          HTML_script_second += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index+1})>아래로</div>`
-        HTML_script_second += "</div>";
+        document.getElementById('farm_section_second').innerHTML = HTML_script_second;
     }
-    document.getElementById('farm_section_second').innerHTML = HTML_script_second;
 }
-
+////-------------------////
+function fetch_list_change(device_list) {
+    const post_data = {
+        id:     localStorage.getItem('user'),
+        token:  localStorage.getItem('token'),
+        list:   device_list
+    }
+    fetch(window.location.protocol+"//"+window.location.host+"/hive/list_arrange", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(post_data)
+    })
+    .then(response => {
+        if (response.status==400 || response.status==406) {
+            alert_swal("error",'로그인 정보가 없습니다.');
+            window.location.href = '/web/login';
+        }else{
+            alert_swal("info",'벌통을 정렬 했습니다.');
+            fetch_equipment();
+        }
+        return; // JSON 대신 텍스트로 응답을 읽습니다.
+    })
+    .catch(error => {
+        console.log(error);
+    });
+}
 ////-------------------////
 function fetch_equipment() {
     // 여기에 실제 서버 URL을 입력하세요
@@ -329,13 +370,14 @@ function fetch_equipment() {
         const devices = data.split("\r\n");
         let device_list = [];
         let HTML_script_first = "";
-        let HTML_script_second= `<div class="btn" id="view_lock" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
+        let HTML_script_second= "<br>";
         for (let index = 0; index < devices.length; index++) {
             const device = devices[index].split(",");
             device_list.push(device);
             HTML_script_first += `<div class="unit-section" id="unit_first_${device[0]}"></div>`;
             HTML_script_second+= `<div class="unit-section" id="unit_second_${device[0]}"></div>`;
         }
+        HTML_script_second += `<div class="btn" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
         document.getElementById('farm_section_first').innerHTML  = HTML_script_first;
         document.getElementById('farm_section_second').innerHTML = HTML_script_second;
         for (let index = 0; index < device_list.length; index++) {

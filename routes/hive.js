@@ -112,6 +112,26 @@ router.post('/list', async function(req, res) {
     res.status(status_code).send(response);
 });
 
+router.post('/list_arrange', async function(req, res) {
+    let status_code = 400;
+    const user_data = req.body;
+    if(user_data.id!=undefined && user_data.token!=undefined){
+        const   path_user   = path_data.user()+"/"+user_data.id;
+        if(token_check(user_data.token,user_data.id)){
+            status_code = 200;
+            let device = "";
+            for (let index = 0; index < user_data.list.length; index++) {
+                if(index != 0) device += "\r\n";
+                device += user_data.list[index];
+            }
+            if(file_system.fileRead(path_user,"device.csv") != device) file_system.fileMK(path_user,device,"device.csv");
+        }else{
+            status_code = 406;
+        }
+    }
+    res.status(status_code).send();
+});
+
 router.post('/list_able', async function(req, res) {
     let status_code = 400;
     let response    = "nodata";
