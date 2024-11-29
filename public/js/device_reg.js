@@ -115,7 +115,7 @@ function fetch_same_ip() {
         if(device_list.length-1>0){
             device_list_innerhtml = '<div class="divider">연결 가능한 벌통</div><div class="form-section">';
             for (let index = 0; index < device_list.length-1; index++) {
-                device_list_innerhtml += `<p class="user-link" id="list_${device_list[index]}" onclick=list_regist("${device_list[index]}")>${device_list[index]}</p>`
+                device_list_innerhtml += `<p class="user-link" id="list_${device_list[index]}" onclick=list_regist("${device_list[index]}") style="cursor:pointer;">${device_list[index]}</p>`
             }
             device_list_innerhtml += "</div>";
         }
