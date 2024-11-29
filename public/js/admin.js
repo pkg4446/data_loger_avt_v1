@@ -213,7 +213,6 @@ function device_list_view(device_list) {
                     version_update = false;
                     version = "latest ver";
                 }
-                if(user_id == null){user_id = "미등록";}
                 HTML_scrpit += "<tr>"
                 if(ip_once){
                     ip_once = false;
