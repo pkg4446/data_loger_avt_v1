@@ -2,7 +2,7 @@ let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
 }else{
-    document.getElementById("lock_btn").innerHTML  = `<div class="btnbox"><span class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</span> <span class="btn" id="view_lock" onclick=fetch_equipment() style="background-color:blue;"">데이터 갱신</span></div>`;
+    document.getElementById("lock_btn").innerHTML  = `<div class="btnbox"><span class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</span> <span class="btn" onclick=fetch_equipment() style="background-color:blue;"">데이터 갱신</span></div>`;
     fetch_user_info();
     fetch_equipment();
 }
@@ -256,7 +256,7 @@ function getdata(send_data, device){
             for (let index = 0; index < hive_num; index++) {
                 HTML_script_second+= `<div class="data-row">
                                     <div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
-                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["TM"][index]}°C</div>
+                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${Math.round(device_log["TM"][index])}°C</div>
                                     <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["IC"][index]}°C</div>
                                     <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["HM"][index]}%</div>
                                     <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]}</span>°C</div>
@@ -381,7 +381,7 @@ function fetch_equipment() {
         for (let index = 0; index < device_list.length; index++) {
             getdata(post_data,device_list[index]);
         }
-        window.scrollTo({top:0, left:axis_T, behavior:'auto'});
+        // window.scrollTo({top:0, left:axis_T, behavior:'auto'});
     })
     .catch(error => {
         console.log(error);
