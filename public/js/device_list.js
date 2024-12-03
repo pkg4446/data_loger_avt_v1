@@ -1,3 +1,4 @@
+const calibration = 2;
 let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
@@ -103,6 +104,7 @@ function goal_temp_change(gorl_devid,devid,index_num,set_temp) {
                 let temperature_avg = 0;
                 for (let index = 0; index < value_number; index++) {
                     temperature_avg += temperature[index];
+                    temperature[index] += calibration;
                 }
                 temperature_avg = temperature_avg/value_number;
 
@@ -239,7 +241,7 @@ function getdata(send_data, device){
             }else{
                 HTML_script_second+= 'style="background-color:Yellow';
             }
-            HTML_script_second+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${(average_value/hive_num)}</span>°C</div></div>`;
+            HTML_script_second+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${(average_value/hive_num)-calibration}</span>°C</div></div>`;
             if(today>data_date){
                 HTML_script_second+= `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}') style="cursor:pointer;">장비 삭제</div>
@@ -256,10 +258,10 @@ function getdata(send_data, device){
             for (let index = 0; index < hive_num; index++) {
                 HTML_script_second+= `<div class="data-row">
                                     <div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
-                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${Math.round(device_log["TM"][index])}°C</div>
+                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["TM"][index]-calibration}°C</div>
                                     <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["IC"][index]}°C</div>
                                     <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["HM"][index]}%</div>
-                                    <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]}</span>°C</div>
+                                    <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-calibration}</span>°C</div>
                                 </div>`;
             }
         }else{
