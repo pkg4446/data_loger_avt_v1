@@ -2,7 +2,7 @@ let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
 }else{
-    document.getElementById("lock_btn").innerHTML  = `<div class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</div>`;
+    document.getElementById("lock_btn").innerHTML  = `<div class="btnbox"><span class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</span> <span class="btn" id="view_lock" onclick=fetch_equipment() style="background-color:blue;"">데이터 갱신</span></div>`;
     fetch_user_info();
     fetch_equipment();
 }
@@ -110,8 +110,6 @@ function goal_temp_change(gorl_devid,devid,index_num,set_temp) {
                 document.getElementById(gorl_devid).innerText = temperature_avg;
             }
         });        
-    }else if(devid!=5 && set_temp!=null){
-        alert_swal("info",`현재값: ${set_temp[devid]}`);
     }
 }
 ////-------------------////
@@ -341,6 +339,7 @@ function fetch_list_change(device_list) {
 }
 ////-------------------////
 function fetch_equipment() {
+    const axis_T = document.documentElement.scrollTop;
     // 여기에 실제 서버 URL을 입력하세요
     const today = new Date();
     const post_data = {
@@ -382,6 +381,7 @@ function fetch_equipment() {
         for (let index = 0; index < device_list.length; index++) {
             getdata(post_data,device_list[index]);
         }
+        window.scrollTo({top:0, left:axis_T, behavior:'auto'});
     })
     .catch(error => {
         console.log(error);
