@@ -58,7 +58,7 @@ function alert_swal(icon,title,text,second) {
 function info_detail(region,data) {
     if(data != undefined){
         // `농장:${data.farm}, 센서:${(data.HM_count+data.IC_count)/2}`
-        alert_swal("info",region+" 지역",`🌡️공간온도: ${(data.TM/data.TM_count)-const calibration}°C`,3);
+        alert_swal("info",region+" 지역",`🌡️공간온도: ${(data.TM/data.TM_count)-calibration}°C`,3);
     }else{
         alert_swal("warning",'정보 없음',region+' 지역에 설치된 장비가 없습니다.',1);
     }
