@@ -211,7 +211,7 @@ function getdata(send_data, device){
                             }else{HTML_script_first+= `<div class="bar"><div class="bar-fill"></div></div>`;}
                         }
                     }
-                    HTML_script_first+= `</div></div><div class="progress-title">출력: <span id="percentage">${bar_percent/2}</span>W</div></div>`
+                    HTML_script_first+= `</div></div><div class="progress-title">출력: <span id="percentage">${parseInt(bar_percent*0.4)}</span>W</div></div>`
                 }
                 HTML_script_first+= "</div>";
                 document.getElementById("unit_first_"+device[0]).innerHTML  = HTML_script_first;
