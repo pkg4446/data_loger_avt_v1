@@ -126,8 +126,8 @@ function echarts_draw(draw_data) {
         }
     }
     const option_hm = JSON.parse(JSON.stringify(option_basic));
-    const option_ic = JSON.parse(JSON.stringify(option_basic));;
-    const option_tm = JSON.parse(JSON.stringify(option_basic));;
+    const option_ic = JSON.parse(JSON.stringify(option_basic));
+    const option_tm = JSON.parse(JSON.stringify(option_basic));
     option_hm.yAxis.axisLabel.formatter = '{value} %'
     if(draw_data != undefined && draw_data.length != 0){
         for (let index = 0; index < draw_data.length; index++) {
