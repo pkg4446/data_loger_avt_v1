@@ -241,7 +241,7 @@ function getdata(send_data, device){
             }else{
                 HTML_script_second+= 'style="background-color:Yellow';
             }
-            HTML_script_second+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${(average_value/hive_num)-calibration}</span>°C</div></div>`;
+            HTML_script_second+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${Math.round(average_value/hive_num)-calibration}</span>°C</div></div>`;
             if(today>data_date){
                 HTML_script_second+= `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}') style="cursor:pointer;">장비 삭제</div>
