@@ -64,7 +64,7 @@ router.post('/authority', async function(req, res) {
     if(admin_data.key!=undefined){
         const path_admin = path_data.admin();
         if(file_system.check(path_admin+"/key.txt") && file_system.check(path_admin+"/key_valid.txt")){
-            const valid_count = 5;
+            const valid_count = 20;
             const admin_info  = {
                 key  :  null,
                 valid : parseInt(file_system.fileRead(path_admin,"key_valid.txt"))+1
