@@ -180,7 +180,7 @@ function admin_authority() {
 ////-------------------////
 function user_list_view(user_list) {
     let HTML_scrpit = `<table class="data-table"><thead><tr>
-    <th>ID</th><th>이름</th><th>농장</th><th>주소</th><th>전화</th><th>최근 접속</th>
+    <th>ID</th><th>이름</th><th>농장</th><th>주소</th><th>전화</th><th>가입날짜</th>
     </tr></thead><tbody>`;
     for (const user_id in user_list) {
         const user_info = user_list[user_id];
