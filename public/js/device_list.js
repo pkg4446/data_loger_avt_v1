@@ -195,7 +195,6 @@ function getdata(send_data, device){
                 HTML_script+= ">가온 기능: ON</div>";
             }else{
                 HTML_script+= ">가온 기능: OFF</div>";
-                document.getElementById("unit_first_"+device[0]).style.display = "none";
             }
 
             let average_value   = 0;
