@@ -144,12 +144,12 @@ function echarts_draw(draw_data) {
     option_ht.yAxis.axisLabel.formatter = '{value} W'
     option_vi.yAxis.axisLabel.formatter = '{value} Wh'
 
+    let energy_use = {};
+    
     let sht_temp = {};
     let sht_humi = {};
     let Thermocouple = {};
-    let energy_use = {};
 
-    console.log(draw_data);
     if(draw_data != undefined && draw_data.length != 0){
         for (let index = 0; index < draw_data.length; index++) {
             for (let axis_x = 0; axis_x < data_number; axis_x++) {

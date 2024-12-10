@@ -54,16 +54,9 @@ cursor: pointer;
     margin-bottom: 10px;
 }
 
-.menu-row {
-    display: grid;
-    grid-template-columns: 1.3fr 3.7fr;
-    gap: 10px;
-    margin-bottom: 5px;
-}
-
 .data-row {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     margin-bottom: 5px;
 }
@@ -109,11 +102,6 @@ cursor: pointer;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.progress-box {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
 .progress-title {
     text-align: center;
     font-weight: bold;
@@ -121,12 +109,12 @@ cursor: pointer;
 .progress-bars {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 }
 .bar {
-    height: 8px;
+    height: 5px;
     background: Aquamarine;
-    border-radius: 4px;
+    border-radius: 2px;
     overflow: hidden;
 }
 .bar-fill {

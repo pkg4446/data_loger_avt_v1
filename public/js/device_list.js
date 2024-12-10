@@ -171,8 +171,7 @@ function getdata(send_data, device){
         const gorl_devid = "goal_"+device[0];
         const heat_devid = "heat_"+device[0];
 
-        let HTML_script_first   = "";
-        let HTML_script_second  = `<div class="unit-info">
+        let HTML_script  = `<div class="unit-info">
                                 <div class="cell" id="${device[0]}" onclick=device_rename("${device[0]}") style="cursor:pointer;">${device[1]}</div>
                                 <div class="cell">${device[0]}</div>`;
         if(response[0]!="null"){
@@ -182,41 +181,20 @@ function getdata(send_data, device){
             // console.log(device_log);
             // console.log(device_config);
 
-            const bar_number = 5;
+            const bar_number = 4;
             const today = new Date();
             today.setHours(today.getHours()-1);
             const data_date = new Date(device_log.date);
 
-            HTML_script_second+= `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
-            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_script_second+= 'style="background-color:Chartreuse'
-            else HTML_script_second+= 'style="background-color:Yellow'
-            HTML_script_second+= ';cursor:pointer;"'
+            HTML_script+= `<div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}") `;
+            if(device_config.dv != null && device_config.dv[device_config.dv.length-1] === device_config.ab) HTML_script+= 'style="background-color:Chartreuse'
+            else HTML_script+= 'style="background-color:Yellow'
+            HTML_script+= ';cursor:pointer;"'
             
-
             if(device_config.ab === '1'){
-                HTML_script_second+= ">가온 기능: ON</div>";
-
-                HTML_script_first= `<div class="menu-row"><div class="cell">가온 현황</div><div class="cell">${device[1]}</div></div><div class="data-row">`;
-                for (let index = 0; index < hive_num; index++) {
-                    const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);
-                    const bar_ratio   = (100/bar_number).toFixed(2);
-                    const bar_fill    = (bar_percent/bar_ratio).toFixed(2);
-                    HTML_script_first+= `<div class="progress-box"><div class="cell"><div class="progress-bars">`;
-                    for (let index_bar = 0; index_bar < bar_number; index_bar++) {
-                        if(index_bar>=bar_number-bar_fill){
-                            HTML_script_first+= `<div class="bar"><div class="bar-fill" style="width:100%"></div></div>`;
-                        }else{
-                            if(bar_number-bar_fill-index_bar-1 < 0){
-                                HTML_script_first+= `<div class="bar"><div class="bar-fill" style="width:${Math.round((bar_fill-Math.floor(bar_fill))*100)}%"></div></div>`;
-                            }else{HTML_script_first+= `<div class="bar"><div class="bar-fill"></div></div>`;}
-                        }
-                    }
-                    HTML_script_first+= `</div></div><div class="progress-title">출력: <span id="percentage">${parseInt(bar_percent*0.4)}</span>W</div></div>`
-                }
-                HTML_script_first+= "</div>";
-                // document.getElementById("unit_first_"+device[0]).innerHTML  = HTML_script_first;
+                HTML_script+= ">가온 기능: ON</div>";
             }else{
-                HTML_script_second+= ">가온 기능: OFF</div>";
+                HTML_script+= ">가온 기능: OFF</div>";
                 document.getElementById("unit_first_"+device[0]).style.display = "none";
             }
 
@@ -235,37 +213,53 @@ function getdata(send_data, device){
                     average_value_check += parseInt(device_config.dv[index]);
                 }
             }
-            HTML_script_second+= `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5,null) `;
+            HTML_script+= `<div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5,null) `;
             if(average_value === average_value_check){
-                HTML_script_second+= 'style="background-color:Chartreuse'
+                HTML_script+= 'style="background-color:Chartreuse'
             }else{
-                HTML_script_second+= 'style="background-color:Yellow';
+                HTML_script+= 'style="background-color:Yellow';
             }
-            HTML_script_second+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${Math.round(average_value/hive_num)-calibration}</span>°C</div></div>`;
+            HTML_script+= `;cursor:pointer;">가온 평균:<span id="${gorl_devid}">${Math.round(average_value/hive_num)-calibration}</span>°C</div></div>`;
             if(today>data_date){
-                HTML_script_second+= `<div class="menu-row">
+                HTML_script+= `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}') style="cursor:pointer;">장비 삭제</div>
                                     <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
                                 </div>`;
             }
-            HTML_script_second+= `<div class="data-row">
+            HTML_script+= `<div class="data-row">
                                 <div class="cell header">벌통 번호</div>
                                 <div class="cell header">공간 온도</div>
                                 <div class="cell header">봉구 온도</div>
                                 <div class="cell header">봉구 습도</div>
+                                <div class="cell header">가온 출력</div>
                                 <div class="cell header">가온</div>
                                 </div><div>`;
             for (let index = 0; index < hive_num; index++) {
-                HTML_script_second+= `<div class="data-row">
+                HTML_script+= `<div class="data-row">
                                     <div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
                                     <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["TM"][index]-calibration}°C</div>
                                     <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["IC"][index]}°C</div>
                                     <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["HM"][index]}%</div>
-                                    <div class="cell header" onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-calibration}</span>°C</div>
-                                </div>`;
+                                    <div class="cell"><div class="progress-bars">`
+
+                                    const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);
+                                    const bar_ratio   = (100/bar_number).toFixed(2);
+                                    const bar_fill    = (bar_percent/bar_ratio).toFixed(2);
+                                    
+                                    for (let index_bar = 0; index_bar < bar_number; index_bar++) {
+                                        if(index_bar>=bar_number-bar_fill){
+                                            HTML_script+= `<div class="bar"><div class="bar-fill" style="width:100%"></div></div>`;
+                                        }else{
+                                            if(bar_number-bar_fill-index_bar-1 < 0){
+                                                HTML_script+= `<div class="bar"><div class="bar-fill" style="width:${Math.round((bar_fill-Math.floor(bar_fill))*100)}%"></div></div>`;
+                                            }else{HTML_script+= `<div class="bar"><div class="bar-fill"></div></div>`;}
+                                        }
+                                    }
+                HTML_script+= "</div></div>"
+                HTML_script+= `<div class="cell header"    onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-calibration}</span>°C</div></div>`;
             }
         }else{
-            HTML_script_second+= `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
+            HTML_script+= `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
                                 <div class="cell" onclick=goal_temp_change("${gorl_devid}","${device[0]}",5,null)>목표:<span id="${gorl_devid}">0</span>°C</div>
                             </div>
                             <div class="menu-row">
@@ -273,8 +267,8 @@ function getdata(send_data, device){
                                 <div class="cell warning">데이터가 없음</div>
                             </div>`;
         }
-        HTML_script_second+= "</div>"
-        document.getElementById("unit_second_"+device[0]).innerHTML = HTML_script_second;
+        HTML_script+= "</div>"
+        document.getElementById("unit_second_"+device[0]).innerHTML = HTML_script;
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -293,22 +287,22 @@ function list_shift(device_list,swap_a,swap_b) {
         }else{
             devices = device_list;
         }
-        let HTML_script_second = "<br>";
+        let HTML_script = "<br>";
         for (let index = 0; index < devices.length; index++) {
             const device = devices[index].split(",");
-            HTML_script_second += `<div class="unit-info">
+            HTML_script += `<div class="unit-info">
                     <div class="cell" id="${device[0]}">${device[1]}</div>
                     <div class="cell">${device[0]}</div>`
-            if(index == 0)  HTML_script_second += `<div class="cell">위로</div>`
-            else            HTML_script_second += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index-1})>위로</div>`
+            if(index == 0)  HTML_script += `<div class="cell">위로</div>`
+            else            HTML_script += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index-1})>위로</div>`
             
-            if(index == devices.length-1) HTML_script_second += `<div class="cell">아래로</div>`
-            else                          HTML_script_second += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index+1})>아래로</div>`
-            HTML_script_second += "</div>";
+            if(index == devices.length-1) HTML_script += `<div class="cell">아래로</div>`
+            else                          HTML_script += `<div class="cell" onclick=list_shift(${JSON.stringify(devices)},${index},${index+1})>아래로</div>`
+            HTML_script += "</div>";
         }
-        HTML_script_second += `<div class="btn" style="background-color:#4ce73c;" onclick=fetch_list_change(${JSON.stringify(devices)})>확인</div>`;
+        HTML_script += `<div class="btn" style="background-color:#4ce73c;" onclick=fetch_list_change(${JSON.stringify(devices)})>확인</div>`;
         
-        document.getElementById('farm_section_second').innerHTML = HTML_script_second;
+        document.getElementById('farm_section_device').innerHTML = HTML_script;
     }
 }
 ////-------------------////
@@ -369,17 +363,14 @@ function fetch_equipment() {
     .then(data => {
         const devices = data.split("\r\n");
         let device_list = [];
-        let HTML_script_first = "";
-        let HTML_script_second= "<br>";
+        let HTML_script= "<br>";
         for (let index = 0; index < devices.length; index++) {
             const device = devices[index].split(",");
             device_list.push(device);
-            HTML_script_first += `<div class="unit-section" id="unit_first_${device[0]}"></div>`;
-            HTML_script_second+= `<div class="unit-section" id="unit_second_${device[0]}"></div>`;
+            HTML_script+= `<div class="unit-section" id="unit_second_${device[0]}"></div>`;
         }
-        HTML_script_second += `<div class="btn" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
-        // document.getElementById('farm_section_first').innerHTML  = HTML_script_first;
-        document.getElementById('farm_section_second').innerHTML = HTML_script_second;
+        HTML_script += `<div class="btn" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
+        document.getElementById('farm_section_device').innerHTML = HTML_script;
         for (let index = 0; index < device_list.length; index++) {
             getdata(post_data,device_list[index]);
         }
