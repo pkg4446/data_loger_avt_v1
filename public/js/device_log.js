@@ -138,15 +138,26 @@ function echarts_draw(draw_data) {
     const option_hm = JSON.parse(JSON.stringify(option_basic));
     const option_ic = JSON.parse(JSON.stringify(option_basic));
     const option_tm = JSON.parse(JSON.stringify(option_basic));
+    const option_ht = JSON.parse(JSON.stringify(option_basic));
+    const option_vi = JSON.parse(JSON.stringify(option_basic));
     option_hm.yAxis.axisLabel.formatter = '{value} %'
+    option_ht.yAxis.axisLabel.formatter = '{value} W'
+    option_vi.yAxis.axisLabel.formatter = '{value} Wh'
 
     let sht_temp = {};
     let sht_humi = {};
     let Thermocouple = {};
+    let energy_use = {};
 
+    console.log(draw_data);
     if(draw_data != undefined && draw_data.length != 0){
         for (let index = 0; index < draw_data.length; index++) {
             for (let axis_x = 0; axis_x < data_number; axis_x++) {
+                option_ht.series[axis_x].data.push((draw_data[index].WK[axis_x]/draw_data[index].GAP*40).toFixed(2));
+                if(energy_use[axis_x] == undefined) energy_use[axis_x] = 0;
+                energy_use[axis_x] += draw_data[index].WK[axis_x]/90;
+                option_vi.series[axis_x].data.push(energy_use[axis_x].toFixed(2));//90=3600/40
+                //위쪽은 가온판 출력
                 option_hm.series[axis_x].data.push(draw_data[index].HM[axis_x]);
                 option_ic.series[axis_x].data.push(draw_data[index].IC[axis_x]);
                 option_tm.series[axis_x].data.push(draw_data[index].TM[axis_x]-calibration);
@@ -186,14 +197,22 @@ function echarts_draw(draw_data) {
     let chartDomIC = document.getElementById('hive_graph_temp');
     let chartDomHM = document.getElementById('hive_graph_humi');
     let chartDomTM = document.getElementById('hive_graph_air');
+    let chartDomHT = document.getElementById('hive_graph_heat');
+    let chartDomVI = document.getElementById('hive_graph_energy');
     let chart_ic = echarts.init(chartDomIC, null, {renderer: 'canvas',useDirtyRect: false});
     let chart_hm = echarts.init(chartDomHM, null, {renderer: 'canvas',useDirtyRect: false});
     let chart_tm = echarts.init(chartDomTM, null, {renderer: 'canvas',useDirtyRect: false});
+    let chart_ht = echarts.init(chartDomHT, null, {renderer: 'canvas',useDirtyRect: false});
+    let chart_vi = echarts.init(chartDomVI, null, {renderer: 'canvas',useDirtyRect: false});
     chart_hm.setOption(option_hm);
     chart_ic.setOption(option_ic);
     chart_tm.setOption(option_tm);
+    chart_ht.setOption(option_ht);
+    chart_vi.setOption(option_vi);
     window.addEventListener('resize', chart_hm.resize);
     window.addEventListener('resize', chart_ic.resize);
     window.addEventListener('resize', chart_tm.resize);
+    window.addEventListener('resize', chart_ht.resize);
+    window.addEventListener('resize', chart_vi.resize);
 }
 ////-------------------////

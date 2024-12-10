@@ -214,7 +214,7 @@ function getdata(send_data, device){
                     HTML_script_first+= `</div></div><div class="progress-title">출력: <span id="percentage">${parseInt(bar_percent*0.4)}</span>W</div></div>`
                 }
                 HTML_script_first+= "</div>";
-                document.getElementById("unit_first_"+device[0]).innerHTML  = HTML_script_first;
+                // document.getElementById("unit_first_"+device[0]).innerHTML  = HTML_script_first;
             }else{
                 HTML_script_second+= ">가온 기능: OFF</div>";
                 document.getElementById("unit_first_"+device[0]).style.display = "none";
@@ -378,7 +378,7 @@ function fetch_equipment() {
             HTML_script_second+= `<div class="unit-section" id="unit_second_${device[0]}"></div>`;
         }
         HTML_script_second += `<div class="btn" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
-        document.getElementById('farm_section_first').innerHTML  = HTML_script_first;
+        // document.getElementById('farm_section_first').innerHTML  = HTML_script_first;
         document.getElementById('farm_section_second').innerHTML = HTML_script_second;
         for (let index = 0; index < device_list.length; index++) {
             getdata(post_data,device_list[index]);
