@@ -225,36 +225,39 @@ function getdata(send_data, device){
                                     <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
                                 </div>`;
             }
-            HTML_script+= `<div class="data-row">
-                                <div class="cell header">벌통 번호</div>
-                                <div class="cell header">공간 온도</div>
-                                <div class="cell header">봉구 온도</div>
-                                <div class="cell header">봉구 습도</div>
-                                <div class="cell header">가온 출력</div>
-                                <div class="cell header">가온</div>
+            if(device_config.ab === '1') HTML_script+= `<div class="data-row-full">`;
+            else HTML_script+= `<div class="data-row">`;
+            HTML_script+=   `<div class="cell header">벌통 번호</div>
+                            <div class="cell header">공간 온도</div>
+                            <div class="cell header">봉구 온도</div>
+                            <div class="cell header">봉구 습도</div>`;
+            if(device_config.ab === '1') HTML_script+=  `<div class="cell header">가온 출력</div>`;
+            HTML_script+=   `<div class="cell header">가온</div>
                                 </div><div>`;
             for (let index = 0; index < hive_num; index++) {
-                HTML_script+= `<div class="data-row">
-                                    <div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
-                                    <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["TM"][index]-calibration}°C</div>
-                                    <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["IC"][index]}°C</div>
-                                    <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["HM"][index]}%</div>
-                                    <div class="cell"><div class="progress-bars">`
-
-                                    const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);
-                                    const bar_ratio   = (100/bar_number).toFixed(2);
-                                    const bar_fill    = (bar_percent/bar_ratio).toFixed(2);
-                                    
-                                    for (let index_bar = 0; index_bar < bar_number; index_bar++) {
-                                        if(index_bar>=bar_number-bar_fill){
-                                            HTML_script+= `<div class="bar"><div class="bar-fill" style="width:100%"></div></div>`;
-                                        }else{
-                                            if(bar_number-bar_fill-index_bar-1 < 0){
-                                                HTML_script+= `<div class="bar"><div class="bar-fill" style="width:${Math.round((bar_fill-Math.floor(bar_fill))*100)}%"></div></div>`;
-                                            }else{HTML_script+= `<div class="bar"><div class="bar-fill"></div></div>`;}
+                if(device_config.ab === '1') HTML_script+= `<div class="data-row-full">`;
+                else HTML_script+= `<div class="data-row">`;
+                HTML_script+=  `<div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
+                                <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["TM"][index]-calibration}°C</div>
+                                <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["IC"][index]}°C</div>
+                                <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${device_log["HM"][index]}%</div>`;
+                if(device_config.ab === '1'){
+                    HTML_script+=   `<div class="cell"><div class="progress-bars">`;
+                                        const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);
+                                        const bar_ratio   = (100/bar_number).toFixed(1);
+                                        const bar_fill    = (bar_percent/bar_ratio).toFixed(1);
+                                        
+                                        for (let index_bar = 0; index_bar < bar_number; index_bar++) {
+                                            if(index_bar>=bar_number-bar_fill){
+                                                HTML_script+= `<div class="bar"><div class="bar-fill" style="width:100%"></div></div>`;
+                                            }else{
+                                                if(bar_number-bar_fill-index_bar-1 < 0){
+                                                    HTML_script+= `<div class="bar"><div class="bar-fill" style="width:${Math.round((bar_fill-Math.floor(bar_fill))*100)}%"></div></div>`;
+                                                }else{HTML_script+= `<div class="bar"><div class="bar-fill"></div></div>`;}
+                                            }
                                         }
-                                    }
-                HTML_script+= "</div></div>"
+                    HTML_script+=   "</div></div>";
+                }
                 HTML_script+= `<div class="cell header"    onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-calibration}</span>°C</div></div>`;
             }
         }else{
