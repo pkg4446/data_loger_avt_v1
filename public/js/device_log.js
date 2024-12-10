@@ -136,8 +136,9 @@ function echarts_draw(draw_data,hive_index,raw) {
         },
         series: []
     };
-    const data_number = 5;
+    let data_number = 5;
     if(hive_index == data_number) hive_index = 0;
+    else{data_number = hive_index+1 }
     for (let index = hive_index; index < data_number; index++) {
         option_basic.series.push(
             {
@@ -179,8 +180,8 @@ function echarts_draw(draw_data,hive_index,raw) {
     let Thermocouple = {};
 
     if(draw_data != undefined && draw_data.length != 0){
-        for (let index = hive_index; index < draw_data.length; index++) {
-            for (let axis_x = 0; axis_x < data_number; axis_x++) {
+        for (let index = 0; index < draw_data.length; index++) {
+            for (let axis_x = hive_index; axis_x < data_number; axis_x++) {
                 option_ht.series[axis_x].data.push((draw_data[index].WK[axis_x]/draw_data[index].GAP*40).toFixed(2));
                 if(energy_use[axis_x] == undefined) energy_use[axis_x] = 0;
                 energy_use[axis_x] += draw_data[index].WK[axis_x]/90;
