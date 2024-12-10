@@ -31,8 +31,9 @@ function lock_shift() {
     }
 }
 ////-------------------////
-function device_detail(devid) {
+function device_detail(macaddr,devid) {
     if(view_locker){
+        localStorage.setItem('macaddr', macaddr);
         localStorage.setItem('device', devid);
         window.location.href = '/web/select';
     }
@@ -237,10 +238,10 @@ function getdata(send_data, device){
             for (let index = 0; index < hive_num; index++) {
                 if(device_config.ab === '1') HTML_script+= `<div class="data-row-full">`;
                 else HTML_script+= `<div class="data-row">`;
-                HTML_script+=  `<div class="cell"           onclick=device_detail("${device[0]}") style="cursor:pointer;">${index+1}</div>
-                                <div class="cell temp-air"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${(parseFloat(device_log["TM"][index])-calibration).toFixed(1)}°C</div>
-                                <div class="cell temp-warm" onclick=device_detail("${device[0]}") style="cursor:pointer;">${parseFloat(device_log["IC"][index]).toFixed(1)}°C</div>
-                                <div class="cell humidity"  onclick=device_detail("${device[0]}") style="cursor:pointer;">${parseFloat(device_log["HM"][index]).toFixed(1)}%</div>`;
+                HTML_script+=  `<div class="cell"           onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${index+1}</div>
+                                <div class="cell temp-air"  onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${(parseFloat(device_log["TM"][index])-calibration).toFixed(1)}°C</div>
+                                <div class="cell temp-warm" onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${parseFloat(device_log["IC"][index]).toFixed(1)}°C</div>
+                                <div class="cell humidity"  onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${parseFloat(device_log["HM"][index]).toFixed(1)}%</div>`;
                 if(device_config.ab === '1'){
                     HTML_script+=   `<div class="cell"><div class="progress-bars">`;
                                         const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);

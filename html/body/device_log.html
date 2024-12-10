@@ -1,20 +1,29 @@
 <main>
     <section class="dashboard">
         <div class="date-controls">
-            <button class="search-btn" onclick="day_change(false)">하루 전</button>
+            <button class="search-btn" onclick="day_change(false,)">하루 전</button>
             <input  class="date-input" type="date" id="data_day" onchange="getdata(new Date(this.value))">
             <button class="search-btn" onclick="day_change(true)">하루 뒤</button>
-        </div><br>
+        </div>
+        <h3 id="divece_name"></h3>
+        <div class="date-controls" id="data_type">
+            <button class="search-btn" onclick="">All</button>
+            <button class="search-btn" onclick="">1</button>
+            <button class="search-btn" onclick="">2</button>
+            <button class="search-btn" onclick="">3</button>
+            <button class="search-btn" onclick="">4</button>
+            <button class="search-btn" onclick="">5</button>
+        </div>
         <div class="graph-container">
-            <h1>🌡️온도</h1>
+            <h3>🌡️온도</h3>
             <div class="graph" id="hive_graph_temp"></div>
-            <h1>💧습도</h1>
+            <h3>💧습도</h3>
             <div class="graph" id="hive_graph_humi"></div>
-            <h1>☀️공간 온도</h1>
+            <h3>☀️공간 온도</h3>
             <div class="graph" id="hive_graph_air"></div>
-            <h1>⚡가온 출력</h1>
+            <h3>⚡가온 출력</h3>
             <div class="graph" id="hive_graph_heat"></div>
-            <h1>⚡가온 출력 누적량</h1>
+            <h3>⚡가온 출력 누적량</h3>
             <div class="graph" id="hive_graph_energy"></div>
         </div>
     </section>

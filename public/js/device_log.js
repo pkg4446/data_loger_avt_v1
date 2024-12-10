@@ -4,6 +4,7 @@ if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
 }else if(localStorage.getItem('device') === null){
     window.location.href = '/web/select';
 }else{
+    document.getElementById('divece_name').innerText = localStorage.getItem('device');
     document.getElementById('data_day').value = new Date().toISOString().substring(0, 10);
     getdata(new Date());
 }
@@ -29,18 +30,43 @@ function day_change(flage){
     }
     document.getElementById('data_day').value = data_day.toISOString().substring(0, 10);
     const date_data = date_parser(data_day);
-
     if(temperatures[date_data] === undefined){
         getdata(data_day);
     }else{
-        echarts_draw(temperatures[date_data]);
+        echarts_draw(temperatures[date_data],5,false);
     }
 }
 ////-------------------////
+function data_type(index,raw){
+    const date_data = date_parser(new Date(document.getElementById('data_day').value));
+    echarts_draw(temperatures[date_data],index,raw);
+}
+////-------------------////
+function data_button(raw){
+    let HTML_script = '<button class="search-btn" onclick="data_type(5,';
+    let data_type   = "";
+    if(raw){
+        data_type   = "true";
+        HTML_script += 'false)">RAW';
+    }else{
+        data_type   = "false";
+        HTML_script += 'true)">MOV';
+    }
+    HTML_script += `</button>
+            <button class="search-btn" onclick="data_type(5,${data_type})">All</button>
+            <button class="search-btn" onclick="data_type(1,${data_type})">1</button>
+            <button class="search-btn" onclick="data_type(2,${data_type})">2</button>
+            <button class="search-btn" onclick="data_type(3,${data_type})">3</button>
+            <button class="search-btn" onclick="data_type(4,${data_type})">4</button>
+            <button class="search-btn" onclick="data_type(5,${data_type})">5</button>`;
+    document.getElementById('data_type').innerHTML = HTML_script;
+}
+////-------------------////
 function getdata(date_now){
+    console.log("get!");
     const userid    = localStorage.getItem('user');
     const token     = localStorage.getItem('token');
-    const device    = localStorage.getItem('device');
+    const device    = localStorage.getItem('macaddr');
 
     fetch(window.location.protocol+"//"+window.location.host+"/hive/log", {
         method: 'POST',
@@ -79,7 +105,7 @@ function getdata(date_now){
         }else{
             temperatures[date_data] = [];
         }
-        echarts_draw(temperatures[date_data]);
+        echarts_draw(temperatures[date_data],5,false);
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -87,7 +113,8 @@ function getdata(date_now){
     });
 }
 ////-------------------////
-function echarts_draw(draw_data) {
+function echarts_draw(draw_data,hive_index,raw) {
+    data_button(raw);
     const option_basic = {
         tooltip: {trigger: 'axis'},
         toolbox: {
@@ -110,7 +137,8 @@ function echarts_draw(draw_data) {
         series: []
     };
     const data_number = 5;
-    for (let index = 0; index < data_number; index++) {
+    if(hive_index == data_number) hive_index = 0;
+    for (let index = hive_index; index < data_number; index++) {
         option_basic.series.push(
             {
                 name: "벌통_"+(index+1),
@@ -151,45 +179,46 @@ function echarts_draw(draw_data) {
     let Thermocouple = {};
 
     if(draw_data != undefined && draw_data.length != 0){
-        for (let index = 0; index < draw_data.length; index++) {
+        for (let index = hive_index; index < draw_data.length; index++) {
             for (let axis_x = 0; axis_x < data_number; axis_x++) {
                 option_ht.series[axis_x].data.push((draw_data[index].WK[axis_x]/draw_data[index].GAP*40).toFixed(2));
                 if(energy_use[axis_x] == undefined) energy_use[axis_x] = 0;
                 energy_use[axis_x] += draw_data[index].WK[axis_x]/90;
                 option_vi.series[axis_x].data.push(energy_use[axis_x].toFixed(2));//90=3600/40
-                //위쪽은 가온판 출력
-                // option_hm.series[axis_x].data.push(draw_data[index].HM[axis_x]);
-                // option_ic.series[axis_x].data.push(draw_data[index].IC[axis_x]);
-                // option_tm.series[axis_x].data.push(draw_data[index].TM[axis_x]-calibration);
-                // 위쪽은 raw, 아래쪽은 moving average.
-                if(sht_temp[axis_x] == undefined) sht_temp[axis_x] = [];
-                if(sht_humi[axis_x] == undefined) sht_humi[axis_x] = [];
-                if(Thermocouple[axis_x] == undefined) Thermocouple[axis_x] = [];
-                if(moving_average>index){
-                    sht_temp[axis_x].push(parseFloat(draw_data[index].HM[axis_x]));
-                    sht_humi[axis_x].push(parseFloat(draw_data[index].IC[axis_x]));
-                    Thermocouple[axis_x].push(parseFloat(draw_data[index].TM[axis_x]));
+                if(raw){
+                    option_hm.series[axis_x].data.push(draw_data[index].HM[axis_x]);
+                    option_ic.series[axis_x].data.push(draw_data[index].IC[axis_x]);
+                    option_tm.series[axis_x].data.push(draw_data[index].TM[axis_x]-calibration);
                 }else{
-                    sht_temp[axis_x][index%moving_average] = parseFloat(draw_data[index].HM[axis_x]);
-                    sht_humi[axis_x][index%moving_average] = parseFloat(draw_data[index].IC[axis_x]);
-                    Thermocouple[axis_x][index%moving_average] = parseFloat(draw_data[index].TM[axis_x]);
+                    if(sht_temp[axis_x] == undefined) sht_temp[axis_x] = [];
+                    if(sht_humi[axis_x] == undefined) sht_humi[axis_x] = [];
+                    if(Thermocouple[axis_x] == undefined) Thermocouple[axis_x] = [];
+                    if(moving_average>index){
+                        sht_temp[axis_x].push(parseFloat(draw_data[index].HM[axis_x]));
+                        sht_humi[axis_x].push(parseFloat(draw_data[index].IC[axis_x]));
+                        Thermocouple[axis_x].push(parseFloat(draw_data[index].TM[axis_x]));
+                    }else{
+                        sht_temp[axis_x][index%moving_average] = parseFloat(draw_data[index].HM[axis_x]);
+                        sht_humi[axis_x][index%moving_average] = parseFloat(draw_data[index].IC[axis_x]);
+                        Thermocouple[axis_x][index%moving_average] = parseFloat(draw_data[index].TM[axis_x]);
+                    }
+                    let moving_temp_ic = 0;
+                    let moving_humi_ic = 0;
+                    let moving_temp_air = 0;
+                    let divide_moving_average = moving_average;
+                    if(moving_average>index) divide_moving_average = index+1;
+                    for (let index_t = 0; index_t < divide_moving_average; index_t++) {
+                        moving_temp_ic += sht_temp[axis_x][index_t];
+                        moving_humi_ic += sht_humi[axis_x][index_t];
+                        moving_temp_air += Thermocouple[axis_x][index_t];
+                    }
+                    const ans_ic_temp  = moving_temp_ic/divide_moving_average;
+                    const ans_ic_humi  = moving_humi_ic/divide_moving_average;
+                    const ans_air_temp = (moving_temp_air/divide_moving_average)-calibration;
+                    option_hm.series[axis_x].data.push(ans_ic_temp.toFixed(2));
+                    option_ic.series[axis_x].data.push(ans_ic_humi.toFixed(2));
+                    option_tm.series[axis_x].data.push(ans_air_temp.toFixed(2));
                 }
-                let moving_temp_ic = 0;
-                let moving_humi_ic = 0;
-                let moving_temp_air = 0;
-                let divide_moving_average = moving_average;
-                if(moving_average>index) divide_moving_average = index+1;
-                for (let index_t = 0; index_t < divide_moving_average; index_t++) {
-                    moving_temp_ic += sht_temp[axis_x][index_t];
-                    moving_humi_ic += sht_humi[axis_x][index_t];
-                    moving_temp_air += Thermocouple[axis_x][index_t];
-                }
-                const ans_ic_temp  = moving_temp_ic/divide_moving_average;
-                const ans_ic_humi  = moving_humi_ic/divide_moving_average;
-                const ans_air_temp = (moving_temp_air/divide_moving_average)-calibration;
-                option_hm.series[axis_x].data.push(ans_ic_temp.toFixed(2));
-                option_ic.series[axis_x].data.push(ans_ic_humi.toFixed(2));
-                option_tm.series[axis_x].data.push(ans_air_temp.toFixed(2));
             }
         }
     }
