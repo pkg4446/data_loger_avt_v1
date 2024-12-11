@@ -9,7 +9,7 @@
 
 .date-controls {
     display: flex;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
 }
 
@@ -24,11 +24,17 @@
     background-color: #e24aa8;
     color: white;
     border: none;
-    padding: 8px 15px;
+    padding: 8px 16px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
+
+.btn-type1 { background-color: #5470C6;}
+.btn-type2 { background-color: #91CC75;}
+.btn-type3 { background-color: #FAC858;}
+.btn-type4 { background-color: #EE6666;}
+.btn-type5 { background-color: #7ED3F4;}
 
 .search-btn:hover {
     background-color: #357abd;

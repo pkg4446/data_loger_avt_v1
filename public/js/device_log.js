@@ -25,6 +25,8 @@ function day_change(flage){
     let data_day = new Date(document.getElementById('data_day').value);
     if(flage){
         data_day.setDate(data_day.getDate()+1);
+        const today = new Date();
+        if(today<data_day) data_day = today;
     }else{
         data_day.setDate(data_day.getDate()-1);
     }
@@ -33,13 +35,32 @@ function day_change(flage){
     if(temperatures[date_data] === undefined){
         getdata(data_day);
     }else{
-        echarts_draw(temperatures[date_data],5,false);
+        draw_chart(date_data);
     }
+}
+function draw_chart(date_data){
+    data_button(false);
+    echarts_draw(temperatures[date_data],5,false,"°C","hive_graph_temp","IC",0);
+    echarts_draw(temperatures[date_data],5,false,"%","hive_graph_humi","HM",0);
+    echarts_draw(temperatures[date_data],5,false,"°C","hive_graph_air","TM",0);
+    echarts_draw_heater(temperatures[date_data],5);
 }
 ////-------------------////
 function data_type(index,raw){
+    data_button(raw);
     const date_data = date_parser(new Date(document.getElementById('data_day').value));
-    echarts_draw(temperatures[date_data],index,raw);
+    echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_temp","IC",0);
+    echarts_draw(temperatures[date_data],index,raw,"%","hive_graph_humi","HM",0);
+    echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_air","TM",0);
+    echarts_draw_heater(temperatures[date_data],index);
+}
+////-------------------////
+function data_independent(type,index,raw){
+    const date_data = date_parser(new Date(document.getElementById('data_day').value));
+    if(type == 0){      echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_temp","IC",0);
+    }else if(type == 1){echarts_draw(temperatures[date_data],index,raw,"%","hive_graph_humi","HM",0);
+    }else if(type == 2){echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_air","TM",0);
+    }else{              echarts_draw_heater(temperatures[date_data],index);}
 }
 ////-------------------////
 function data_button(raw){
@@ -52,14 +73,17 @@ function data_button(raw){
         data_type   = "false";
         HTML_script += 'true)">MOV';
     }
-    HTML_script += `</button>
-            <button class="search-btn" onclick="data_type(5,${data_type})">All</button>
-            <button class="search-btn" onclick="data_type(0,${data_type})">1</button>
-            <button class="search-btn" onclick="data_type(1,${data_type})">2</button>
-            <button class="search-btn" onclick="data_type(2,${data_type})">3</button>
-            <button class="search-btn" onclick="data_type(3,${data_type})">4</button>
-            <button class="search-btn" onclick="data_type(4,${data_type})">5</button>`;
+    HTML_script += "</button>"
     document.getElementById('data_type').innerHTML = HTML_script;
+    for (let index = 0; index < 5; index++) {
+        HTML_script =   `<button class="search-btn" onclick="data_independent(${index},5,${data_type})">All</button>
+                    <button class="search-btn btn-type1" onclick="data_independent(${index},0,${data_type})">1</button>
+                    <button class="search-btn btn-type2" onclick="data_independent(${index},1,${data_type})">2</button>
+                    <button class="search-btn btn-type3" onclick="data_independent(${index},2,${data_type})">3</button>
+                    <button class="search-btn btn-type4" onclick="data_independent(${index},3,${data_type})">4</button>
+                    <button class="search-btn btn-type5" onclick="data_independent(${index},4,${data_type})">5</button>`;
+        document.getElementById(`data_index${index}`).innerHTML = HTML_script;
+    }
 }
 ////-------------------////
 function getdata(date_now){
@@ -104,7 +128,7 @@ function getdata(date_now){
         }else{
             temperatures[date_data] = [];
         }
-        echarts_draw(temperatures[date_data],5,false);
+        draw_chart(date_data);
     })
     .catch((error) => {
         console.error('Error:', error);
@@ -112,8 +136,7 @@ function getdata(date_now){
     });
 }
 ////-------------------////
-function echarts_draw(draw_data,hive_index,raw) {
-    data_button(raw);
+function echarts_draw(draw_data,hive_index,raw,fromat,dom,data,calibrate) {
     const option_basic = {
         tooltip: {trigger: 'axis'},
         toolbox: {
@@ -131,7 +154,7 @@ function echarts_draw(draw_data,hive_index,raw) {
         },
         yAxis: {
             type: 'value',
-            axisLabel: {formatter: '{value} °C'}
+            axisLabel: {formatter: '{value} '+fromat}
         },
         series: []
     };
@@ -161,21 +184,92 @@ function echarts_draw(draw_data,hive_index,raw) {
             option_basic.xAxis.data.push(time_parser(data_date));
         }
     }
-    const option_hm = JSON.parse(JSON.stringify(option_basic));
-    const option_ic = JSON.parse(JSON.stringify(option_basic));
-    const option_tm = JSON.parse(JSON.stringify(option_basic));
+    const option = JSON.parse(JSON.stringify(option_basic));
+    let   moving = {};
+
+    if(draw_data != undefined && draw_data.length != 0){
+        for (let index = 0; index < draw_data.length; index++) {
+            for (let axis_x = 0; axis_x < data_number; axis_x++) {
+                if(hive_index == data_number || axis_x == hive_index){
+                    if(raw){
+                        option.series[axis_x].data.push(draw_data[index][data][axis_x]-calibrate);
+                    }else{
+                        if(moving[axis_x] == undefined) moving[axis_x] = [];
+                        if(moving_average>index){
+                            moving[axis_x].push(parseFloat(draw_data[index][data][axis_x]));
+                        }else{
+                            moving[axis_x][index%moving_average] = parseFloat(draw_data[index][data][axis_x]);
+                        }
+                        let moving_data = 0;
+                        let divide_moving_average = moving_average;
+                        if(moving_average>index) divide_moving_average = index+1;
+                        for (let index_t = 0; index_t < divide_moving_average; index_t++) {
+                            moving_data += moving[axis_x][index_t];
+                        }
+                        const ans_data = (moving_data/divide_moving_average)-calibrate;
+                        option.series[axis_x].data.push(ans_data.toFixed(2));
+                    }
+                }
+            }
+        }
+    }
+    let chartDom = document.getElementById(dom);
+    let chart    = echarts.init(chartDom, null, {renderer: 'canvas',useDirtyRect: false});
+    chart.setOption(option);
+    window.addEventListener('resize', chart.resize);
+}
+////-------------------////
+
+////-------------------////
+function echarts_draw_heater(draw_data,hive_index) {
+    const option_basic = {
+        tooltip: {trigger: 'axis'},
+        toolbox: {
+            show: true,
+            feature: {
+                dataZoom:  { yAxisIndex: 'none'},
+                dataView:  { readOnly: false },
+                magicType: { type: ['line', 'bar'] }
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: []
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {formatter: '{value}'}
+        },
+        series: []
+    };
+    const data_number = 5;
+    for (let index = 0; index < data_number; index++) {
+        option_basic.series.push(
+            {
+                name: "벌통_"+(index+1),
+                type: 'line',
+                data: [],
+                markPoint: {data: [{ type: 'max', name: 'Max' },{ type: 'min', name: 'Min' }]},
+                markLine:  {data: [{ type: 'average', name: 'Avg' }]}
+            }
+        );
+    }
+
+    if(draw_data != undefined && draw_data.length != 0){
+        for (let index = 0; index < draw_data.length; index++) {
+            const data_date = new Date(draw_data[index].date);
+            option_basic.xAxis.data.push(time_parser(data_date));
+        }
+    }
+
     const option_ht = JSON.parse(JSON.stringify(option_basic));
     const option_vi = JSON.parse(JSON.stringify(option_basic));
-    option_hm.yAxis.axisLabel.formatter = '{value} %'
     option_ht.yAxis.axisLabel.formatter = '{value} W'
     option_vi.yAxis.axisLabel.formatter = '{value} Wh'
 
     let energy_use = {};
     
-    let sht_temp = {};
-    let sht_humi = {};
-    let Thermocouple = {};
-
     if(draw_data != undefined && draw_data.length != 0){
         for (let index = 0; index < draw_data.length; index++) {
             for (let axis_x = 0; axis_x < data_number; axis_x++) {
@@ -184,63 +278,16 @@ function echarts_draw(draw_data,hive_index,raw) {
                     if(energy_use[axis_x] == undefined) energy_use[axis_x] = 0;
                     energy_use[axis_x] += draw_data[index].WK[axis_x]/90;
                     option_vi.series[axis_x].data.push(energy_use[axis_x].toFixed(2));//90=3600/40
-                    if(raw){
-                        option_hm.series[axis_x].data.push(draw_data[index].HM[axis_x]);
-                        option_ic.series[axis_x].data.push(draw_data[index].IC[axis_x]);
-                        option_tm.series[axis_x].data.push(draw_data[index].TM[axis_x]-calibration);
-                    }else{
-                        if(sht_temp[axis_x] == undefined) sht_temp[axis_x] = [];
-                        if(sht_humi[axis_x] == undefined) sht_humi[axis_x] = [];
-                        if(Thermocouple[axis_x] == undefined) Thermocouple[axis_x] = [];
-                        if(moving_average>index){
-                            sht_temp[axis_x].push(parseFloat(draw_data[index].HM[axis_x]));
-                            sht_humi[axis_x].push(parseFloat(draw_data[index].IC[axis_x]));
-                            Thermocouple[axis_x].push(parseFloat(draw_data[index].TM[axis_x]));
-                        }else{
-                            sht_temp[axis_x][index%moving_average] = parseFloat(draw_data[index].HM[axis_x]);
-                            sht_humi[axis_x][index%moving_average] = parseFloat(draw_data[index].IC[axis_x]);
-                            Thermocouple[axis_x][index%moving_average] = parseFloat(draw_data[index].TM[axis_x]);
-                        }
-                        let moving_temp_ic = 0;
-                        let moving_humi_ic = 0;
-                        let moving_temp_air = 0;
-                        let divide_moving_average = moving_average;
-                        if(moving_average>index) divide_moving_average = index+1;
-                        for (let index_t = 0; index_t < divide_moving_average; index_t++) {
-                            moving_temp_ic += sht_temp[axis_x][index_t];
-                            moving_humi_ic += sht_humi[axis_x][index_t];
-                            moving_temp_air += Thermocouple[axis_x][index_t];
-                        }
-                        const ans_ic_temp  = moving_temp_ic/divide_moving_average;
-                        const ans_ic_humi  = moving_humi_ic/divide_moving_average;
-                        const ans_air_temp = (moving_temp_air/divide_moving_average)-calibration;
-                        option_hm.series[axis_x].data.push(ans_ic_temp.toFixed(2));
-                        option_ic.series[axis_x].data.push(ans_ic_humi.toFixed(2));
-                        option_tm.series[axis_x].data.push(ans_air_temp.toFixed(2));
-                    }
                 }
             }
         }
     }
-
-    let chartDomIC = document.getElementById('hive_graph_temp');
-    let chartDomHM = document.getElementById('hive_graph_humi');
-    let chartDomTM = document.getElementById('hive_graph_air');
     let chartDomHT = document.getElementById('hive_graph_heat');
     let chartDomVI = document.getElementById('hive_graph_energy');
-    let chart_ic = echarts.init(chartDomIC, null, {renderer: 'canvas',useDirtyRect: false});
-    let chart_hm = echarts.init(chartDomHM, null, {renderer: 'canvas',useDirtyRect: false});
-    let chart_tm = echarts.init(chartDomTM, null, {renderer: 'canvas',useDirtyRect: false});
     let chart_ht = echarts.init(chartDomHT, null, {renderer: 'canvas',useDirtyRect: false});
     let chart_vi = echarts.init(chartDomVI, null, {renderer: 'canvas',useDirtyRect: false});
-    chart_hm.setOption(option_hm);
-    chart_ic.setOption(option_ic);
-    chart_tm.setOption(option_tm);
     chart_ht.setOption(option_ht);
     chart_vi.setOption(option_vi);
-    window.addEventListener('resize', chart_hm.resize);
-    window.addEventListener('resize', chart_ic.resize);
-    window.addEventListener('resize', chart_tm.resize);
     window.addEventListener('resize', chart_ht.resize);
     window.addEventListener('resize', chart_vi.resize);
 }

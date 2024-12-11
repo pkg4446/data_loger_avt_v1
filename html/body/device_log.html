@@ -5,18 +5,20 @@
             <input  class="date-input" type="date" id="data_day" onchange="getdata(new Date(this.value))">
             <button class="search-btn" onclick="day_change(true)">하루 뒤</button>
         </div>
-        <h2 id="divece_name"></h2>
-        <div class="date-controls" id="data_type"></div>
+        <div class="date-controls">
+            <h2 id="divece_name"></h2>
+            <div id="data_type"></div>
+        </div>
         <div class="graph-container" id="graph_area">
-            <h3>🌡️온도</h3>
+            <div class="date-controls"><h3>🌡️온도</h3><div class="date-controls" id="data_index0"></div></div>
             <div class="graph" id="hive_graph_temp"></div>
-            <h3>💧습도</h3>
+            <div class="date-controls"><h3>💧습도</h3><div class="date-controls" id="data_index1"></div></div>
             <div class="graph" id="hive_graph_humi"></div>
-            <h3>☀️공간 온도</h3>
+            <div class="date-controls"><h3>☀️공간 온도</h3><div class="date-controls" id="data_index2"></div></div>
             <div class="graph" id="hive_graph_air"></div>
-            <h3>⚡가온 출력</h3>
+            <div class="date-controls"><h3>⚡가온 출력</h3><div class="date-controls" id="data_index3"></div></div>
             <div class="graph" id="hive_graph_heat"></div>
-            <h3>⚡가온 출력 누적량</h3>
+            <div class="date-controls"><h3>⚡가온 출력 누적량</h3><div class="date-controls" id="data_index4"></div></div>
             <div class="graph" id="hive_graph_energy"></div>
         </div>
     </section>
