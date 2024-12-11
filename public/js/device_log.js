@@ -163,7 +163,7 @@ function echarts_draw(draw_data,hive_index,raw,fromat,dom,data,calibrate) {
     if(data == "HM"){
         option_basic.yAxis.min = 0;
         option_basic.yAxis.max = 100;
-    }
+    }else if(data == "TM") option_basic.yAxis.min = -10;
     const data_number = 5;
     for (let index = 0; index < data_number; index++) {
         option_basic.series.push(
