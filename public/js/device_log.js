@@ -154,10 +154,16 @@ function echarts_draw(draw_data,hive_index,raw,fromat,dom,data,calibrate) {
         },
         yAxis: {
             type: 'value',
+            min:-20,
+            max:50,
             axisLabel: {formatter: '{value} '+fromat}
         },
         series: []
     };
+    if(data == "HM"){
+        option_basic.yAxis.min = 0;
+        option_basic.yAxis.max = 100;
+    }
     const data_number = 5;
     for (let index = 0; index < data_number; index++) {
         option_basic.series.push(
@@ -239,6 +245,8 @@ function echarts_draw_heater(draw_data,hive_index) {
         },
         yAxis: {
             type: 'value',
+            min:0,
+            max:40,
             axisLabel: {formatter: '{value}'}
         },
         series: []
@@ -264,6 +272,8 @@ function echarts_draw_heater(draw_data,hive_index) {
     }
 
     const option_ht = JSON.parse(JSON.stringify(option_basic));
+    delete option_basic.yAxis.min;
+    delete option_basic.yAxis.max;
     const option_vi = JSON.parse(JSON.stringify(option_basic));
     option_ht.yAxis.axisLabel.formatter = '{value} W'
     option_vi.yAxis.axisLabel.formatter = '{value} Wh'
