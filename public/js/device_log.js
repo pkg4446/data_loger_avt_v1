@@ -75,7 +75,7 @@ function data_button(raw){
     }
     HTML_script += "</button>"
     document.getElementById('data_type').innerHTML = HTML_script;
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < 4; index++) {
         HTML_script =   `<button class="search-btn" onclick="data_independent(${index},5,${data_type})">All</button>
                     <button class="search-btn btn-type1" onclick="data_independent(${index},0,${data_type})">1</button>
                     <button class="search-btn btn-type2" onclick="data_independent(${index},1,${data_type})">2</button>
