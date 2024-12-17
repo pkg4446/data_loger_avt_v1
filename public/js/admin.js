@@ -84,8 +84,6 @@ function user_login(user_id) {
                         admin_authority();
                     });
                 });
-            }else{
-                admin_authority();
             }
         });
     }
