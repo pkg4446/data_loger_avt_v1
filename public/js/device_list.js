@@ -79,7 +79,7 @@ function goal_temp_change(gorl_devid,devid,index_num,set_temp) {
             input: "range",
             inputLabel: "목표온도",
             inputAttributes: {
-                min: "1",
+                min: "-"+calibration,
                 max: "30",
                 step: "1"
         },
@@ -223,7 +223,7 @@ function getdata(send_data, device){
             if(today>data_date){
                 HTML_script+= `<div class="menu-row">
                                     <div class="cell warning" onclick=fetch_equipment_disconnect('${device[0]}') style="cursor:pointer;">장비 삭제</div>
-                                    <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
+                                    <div class="cell warning">마지막 기록 : ${data_date.getFullYear()}년 ${data_date.getMonth()+1}월 ${data_date.getDate()}일 ${data_date.getHours()}시 ${data_date.getMinutes()}분</div>
                                 </div>`;
             }
             if(device_config.ab === '1') HTML_script+= `<div class="data-row-full">`;
