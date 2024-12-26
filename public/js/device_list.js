@@ -228,20 +228,20 @@ function getdata(send_data, device){
             }
             if(device_config.ab === '1') HTML_script+= `<div class="data-row-full">`;
             else HTML_script+= `<div class="data-row">`;
-            HTML_script+=   `<div class="cell header">벌통 번호</div>
-                            <div class="cell header">공간 온도</div>
-                            <div class="cell header">봉구 온도</div>
-                            <div class="cell header">봉구 습도</div>`;
+            HTML_script+=   `<div class="cell header">번호</div>
+                            <div class="cell header">공간 °C</div>
+                            <div class="cell header">봉구 °C</div>
+                            <div class="cell header">습도 %</div>`;
             if(device_config.ab === '1') HTML_script+=  `<div class="cell header">가온 출력</div>`;
-            HTML_script+=   `<div class="cell header">가온</div>
+            HTML_script+=   `<div class="cell header">가온 °C</div>
                                 </div><div>`;
             for (let index = 0; index < hive_num; index++) {
                 if(device_config.ab === '1') HTML_script+= `<div class="data-row-full">`;
                 else HTML_script+= `<div class="data-row">`;
                 HTML_script+=  `<div class="cell"           onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${index+1}</div>
-                                <div class="cell temp-air"  onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${(parseFloat(device_log["TM"][index])-calibration).toFixed(1)}°C</div>
-                                <div class="cell temp-warm" onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${parseFloat(device_log["IC"][index]).toFixed(1)}°C</div>
-                                <div class="cell humidity"  onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${parseFloat(device_log["HM"][index]).toFixed(1)}%</div>`;
+                                <div class="cell temp-air"  onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${(parseFloat(device_log["TM"][index])-calibration).toFixed(1)}</div>
+                                <div class="cell temp-warm" onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${parseFloat(device_log["IC"][index]).toFixed(1)}</div>
+                                <div class="cell humidity"  onclick=device_detail("${device[0]}","${device[1]}") style="cursor:pointer;">${parseInt(device_log["HM"][index])}</div>`;
                 if(device_config.ab === '1'){
                     HTML_script+=   `<div class="cell"><div class="progress-bars">`;
                                         const bar_percent = Math.round(device_log.WK[index]/device_log.GAP*100);
@@ -259,7 +259,7 @@ function getdata(send_data, device){
                                         }
                     HTML_script+=   "</div></div>";
                 }
-                HTML_script+= `<div class="cell header"    onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-calibration}</span>°C</div></div>`;
+                HTML_script+= `<div class="cell header"    onclick=goal_temp_change("${gorl_devid}","${device[0]}",${index},${device_config.dv}) style="cursor:pointer;"><span id="${gorl_devid+index}">${device_config.th[index]-calibration}</span></div></div>`;
             }
         }else{
             HTML_script+= `    <div class="cell" id="${heat_devid}" onclick=temp_assist_change("${heat_devid}","${device[0]}")>가온 기능: OFF</div>
