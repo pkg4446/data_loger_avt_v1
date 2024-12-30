@@ -1,10 +1,4 @@
-main {
-    background-color: #FFF3D6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
+
 
 .submit-container {
     background: white;
@@ -86,8 +80,8 @@ main {
 
 
 .input-field {
-    width: 80%;
-    padding: 10px;
+    width: 100%;
+    padding: 10px 0px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 14px;
@@ -146,12 +140,12 @@ main {
 }
 
 .select-button {
-    padding: 10px 15px;
+    padding: 10px 0px;
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 4px;
     cursor: pointer;
-    width: 85%;
+    width: 100%;
     text-align: left;
     position: relative;
   }
