@@ -42,7 +42,7 @@ function draw_chart(date_data){
     data_button(false);
     echarts_draw(temperatures[date_data],5,false,"°C","hive_graph_temp","IC",0);
     echarts_draw(temperatures[date_data],5,false,"%","hive_graph_humi","HM",0);
-    echarts_draw(temperatures[date_data],5,false,"°C","hive_graph_air","TM",0);
+    echarts_draw(temperatures[date_data],5,false,"°C","hive_graph_air","TM",calibration);
     echarts_draw_heater(temperatures[date_data],5);
 }
 ////-------------------////
@@ -51,7 +51,7 @@ function data_type(index,raw){
     const date_data = date_parser(new Date(document.getElementById('data_day').value));
     echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_temp","IC",0);
     echarts_draw(temperatures[date_data],index,raw,"%","hive_graph_humi","HM",0);
-    echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_air","TM",0);
+    echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_air","TM",calibration);
     echarts_draw_heater(temperatures[date_data],index);
 }
 ////-------------------////
@@ -59,7 +59,7 @@ function data_independent(type,index,raw){
     const date_data = date_parser(new Date(document.getElementById('data_day').value));
     if(type == 0){      echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_temp","IC",0);
     }else if(type == 1){echarts_draw(temperatures[date_data],index,raw,"%","hive_graph_humi","HM",0);
-    }else if(type == 2){echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_air","TM",0);
+    }else if(type == 2){echarts_draw(temperatures[date_data],index,raw,"°C","hive_graph_air","TM",calibration);
     }else{              echarts_draw_heater(temperatures[date_data],index);}
 }
 ////-------------------////
