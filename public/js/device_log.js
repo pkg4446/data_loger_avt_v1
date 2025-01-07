@@ -180,9 +180,10 @@ function echarts_draw(draw_data,hive_index,raw,fromat,dom,data,calibrate) {
     let moving_average = 1;
     const average_length_minute = 30; //이동평균 범위
     if(draw_data.length>1){
-        const data_date0 = new Date(draw_data[0].date);
-        const data_date1 = new Date(draw_data[1].date);
-        moving_average = average_length_minute/Math.round((data_date1-data_date0)/(60*1000));//이동평균
+        moving_average = average_length_minute/Math.round(draw_data[0].GAP/60);
+        // const data_date0 = new Date(draw_data[0].date);
+        // const data_date1 = new Date(draw_data[1].date);
+        // moving_average = average_length_minute/Math.round((data_date1-data_date0)/(60*1000));//이동평균
     }
     if(draw_data != undefined && draw_data.length != 0){
         for (let index = 0; index < draw_data.length; index++) {
