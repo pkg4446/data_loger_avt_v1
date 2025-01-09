@@ -80,7 +80,7 @@ function goal_temp_change(gorl_devid,devid,index_num,set_temp) {
             inputLabel: "목표온도",
             inputAttributes: {
                 min: "-"+calibration,
-                max: "30",
+                max: "35",
                 step: "1"
         },
             inputValue: init_value
