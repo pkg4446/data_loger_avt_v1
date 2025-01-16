@@ -1,4 +1,5 @@
 const express       = require('express');
+const compression   = require("compression");
 const favicon       = require('serve-favicon');
 const path          = require('path');
 const file_system   = require('./api/fs_core');
@@ -14,6 +15,7 @@ if(!file_system.check(path_data.firmware())) file_system.folderMK(path_data.firm
 const app   = express();
 const port  = 3002;
 
+app.use(compression());
 app.use(express.json());
 app.use(favicon(path.join(__dirname, '/public', 'favicon.ico')));
 app.use('/public',express.static(__dirname +'/public'));
