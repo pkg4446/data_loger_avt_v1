@@ -75,11 +75,11 @@ router.post('/authority', async function(req, res) {
         if(file_system.check(path_admin+"/key.json")){
             const valid_count = 20;
             const admin_info  = JSON.parse(file_system.fileRead(path_admin,"key.json"));
-            file_system.fileMK(path_admin,JSON.stringify(admin_info),"key.json");
             if(++admin_info.valid>valid_count){
                 status_code = 202;
                 file_system.fileMK(path_admin,new_key(),"key.json");
             }else{
+                file_system.fileMK(path_admin,JSON.stringify(admin_info),"key.json");
                 if(admin_info.key == admin_data.key){
                     status_code       = 200;
                     const token_admin = [{token:crypto.randomBytes(16).toString('hex'),valid:0}];
@@ -89,9 +89,8 @@ router.post('/authority', async function(req, res) {
                             token_admin.push(admin_tokens[index]);
                             if(index == 3) break; //동시 로그인 제한
                         }
-                    }else{
-                        file_system.fileMK(path_admin,JSON.stringify(token_admin),"token.json");
                     }
+                    file_system.fileMK(path_admin,JSON.stringify(token_admin),"token.json");
                     response = token_admin[0].token;
                 }else{
                     status_code = 403;
