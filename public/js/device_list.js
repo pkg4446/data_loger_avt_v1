@@ -3,10 +3,10 @@ let view_locker = false;
 if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     window.location.href = '/web/login';
 }else{
-    document.getElementById("lock_btn").innerHTML  = `<div class="btnbox"><span class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</span> <span class="btn" onclick=fetch_equipment() style="background-color:blue;"">데이터 갱신</span></div>`;
+    document.getElementById("lock_btn").innerHTML  = `<div class="btnbox"><span class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</span> <span class="btn" onclick=fetch_equipment(false) style="background-color:blue;"">데이터 갱신</span></div>`;
     fetch_user_info();
-    fetch_equipment();
-    setInterval(() => fetch_equipment(), 150*1000);
+    fetch_equipment(true);
+    setInterval(() => fetch_equipment(false), 150*1000);
 }
 ////--------------------------------------------------------------------////
 function alert_swal(icon,title) {
@@ -329,7 +329,7 @@ function fetch_list_change(device_list) {
             window.location.href = '/web/login';
         }else{
             alert_swal("info",'벌통을 정렬 했습니다.');
-            fetch_equipment();
+            fetch_equipment(true);
         }
         return; // JSON 대신 텍스트로 응답을 읽습니다.
     })
@@ -338,7 +338,7 @@ function fetch_list_change(device_list) {
     });
 }
 ////-------------------////
-function fetch_equipment() {
+function fetch_equipment(init) {
     const axis_T = document.documentElement.scrollTop;
     // 여기에 실제 서버 URL을 입력하세요
     const today = new Date();
@@ -373,8 +373,10 @@ function fetch_equipment() {
             device_list.push(device);
             HTML_script+= `<div class="unit-section" id="unit_second_${device[0]}"></div>`;
         }
-        HTML_script += `<div class="btn" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
-        document.getElementById('farm_section_device').innerHTML = HTML_script;
+        if(init){
+            HTML_script += `<div class="btn" onclick=list_shift(${JSON.stringify(devices)},${null},${null})>벌통 정렬</div>`;
+            document.getElementById('farm_section_device').innerHTML = HTML_script;
+        }
         for (let index = 0; index < device_list.length; index++) {
             getdata(post_data,device_list[index]);
         }
