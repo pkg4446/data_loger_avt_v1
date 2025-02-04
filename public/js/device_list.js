@@ -6,6 +6,7 @@ if(localStorage.getItem('user')==null || localStorage.getItem('token')==null){
     document.getElementById("lock_btn").innerHTML  = `<div class="btnbox"><span class="btn" id="view_lock" onclick=lock_shift()>화면 잠김</span> <span class="btn" onclick=fetch_equipment() style="background-color:blue;"">데이터 갱신</span></div>`;
     fetch_user_info();
     fetch_equipment();
+    setInterval(() => fetch_equipment(), 150*1000);
 }
 ////--------------------------------------------------------------------////
 function alert_swal(icon,title) {
