@@ -310,60 +310,48 @@ function ascii() {
     return String.fromCharCode(ascii_dec);
 }
 ////-------------------////
-function device_del(devip,devid,userid) {
+async function secret_code(title) {
     let del_code = "";
     for (let index = 0; index < 4; index++) {
         del_code += ascii();
     }
-    Swal.fire({
-        title: "연결 해제",
+    const input = await Swal.fire({
+        title: title,
         input: "text",
         text: del_code + "를 입력하세요.",
         showCancelButton: true,
         inputPlaceholder: del_code,
         confirmButtonText: "변경",
         cancelButtonText:  "취소"
-    }).then((result) => {
-        if (result.isConfirmed){
-            if(result.value === del_code){
-                fetch_device_change("disconnect",devip,devid,userid);
-            }else{
-                Swal.fire({
-                    title: "해제 코드가 틀렸습니다.",
-                    text: del_code +" != "+result.value,
-                    icon: "error"
-                });
-            }
+    })
+    console.log(del_code,input.value);
+    return del_code == input.value;
+}
+////-------------------////
+function device_del(devip,devid,userid) {
+    secret_code("연결 해제").then((result) => {
+        if(result){
+            fetch_device_change("disconnect",devip,devid,userid);
+        }else{
+            Swal.fire({
+                title: "코드가 틀렸습니다.",
+                icon:  "error"
+            });
         }
-    });
+    })
 }
 ////-------------------////
 function firmware_update(devid) {
-    let del_code = "";
-    for (let index = 0; index < 4; index++) {
-        del_code += ascii();
-    }
-    Swal.fire({
-        title: "Firmware update",
-        input: "text",
-        text: del_code + "를 입력하세요.",
-        showCancelButton: true,
-        inputPlaceholder: del_code,
-        confirmButtonText: "확인",
-        cancelButtonText:  "취소"
-    }).then((result) => {
-        if (result.isConfirmed){
-            if(result.value === del_code){
-                fetch_device_change("firmware",null,devid,null);
-            }else{
-                Swal.fire({
-                    title: "해제 코드가 틀렸습니다.",
-                    text: del_code +" != "+result.value,
-                    icon: "error"
-                });
-            }
+    secret_code("Firmware update").then((result) => {
+        if(result){
+            fetch_device_change("firmware",null,devid,null);
+        }else{
+            Swal.fire({
+                title: "코드가 틀렸습니다.",
+                icon:  "error"
+            });
         }
-    });
+    })
 }
 ////-------------------////
 function data_list() {
@@ -403,28 +391,37 @@ function data_list() {
 }
 ////-------------------////
 function del_null() {
-    fetch(window.location.protocol+"//"+window.location.host+"/admin/clear", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({token:localStorage.getItem('manager')})
-    })
-    .then(res => {
-        if (res.status==400) {
-            admin_authority();
+    secret_code("장치 정리").then((result) => {
+        if(result){
+            fetch(window.location.protocol+"//"+window.location.host+"/admin/clear", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({token:localStorage.getItem('manager')})
+            })
+            .then(res => {
+                if (res.status==400) {
+                    admin_authority();
+                }else{
+                    Swal.fire({
+                        position: "top",
+                        icon:   "info",
+                        title:  '장치 정리',
+                        text:   'null 장치를 제거했습니다',
+                        showConfirmButton: false,
+                        timer:  1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                }
+            });
         }else{
             Swal.fire({
-                position: "top",
-                icon:   "info",
-                title:  '장치 정리',
-                text:   'null 장치를 제거했습니다',
-                showConfirmButton: false,
-                timer:  1500
-            }).then(() => {
-                location.reload();
+                title: "코드가 틀렸습니다.",
+                icon:  "error"
             });
         }
-    });
+    })
 }
 ////-------------------////
