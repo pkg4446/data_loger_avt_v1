@@ -163,4 +163,17 @@ router.post('/disconnect', async function(req, res) {
     res.status(status_code).send();
 });
 
+router.post('/clear', async function(req, res) {
+    let status_code = 400;
+    const admin_data = req.body;
+    if(admin_data.token!=undefined){
+        if(token_check(admin_data.token)){
+            status_code = await device.clear_null();
+        }else{
+            status_code = 406;
+        }
+    }
+    res.status(status_code).send();
+});
+
 module.exports = router;

@@ -67,4 +67,19 @@ module.exports = {
         }
         return status_code;
     },
+
+    clear_null : async function(){
+        let status_code = 200;
+        const devices   = file_system.Dir(path_data.device());
+        let device_list = false;
+        devices.forEach(device => {
+            const path_device = path_data.device()+"/"+device;
+            if(!file_system.check(path_device+"/owner.txt")){
+                device_list = true;
+                file_system.folderDel(path_device);
+            }
+        });
+        if(device_list) memory_admin.data_renewal(false);
+        return status_code;
+    },
 }

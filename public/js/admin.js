@@ -196,7 +196,7 @@ function user_list_view(user_list) {
     document.getElementById("user_table").innerHTML = HTML_scrpit;
 }
 function device_list_view(device_list) {
-    console.log(device_list);
+    // console.log(device_list);
     let HTML_scrpit = `<table class="data-table"><thead><tr>
     <th>IP</th><th>ID</th><th>firmware</th><th>등록 유저</th></tr></thead><tbody>`;
     for (const device_ip in device_list) {
@@ -400,5 +400,31 @@ function data_list() {
         user_list_view(admin_page.user);
         device_list_view(admin_page.device);
     }
+}
+////-------------------////
+function del_null() {
+    fetch(window.location.protocol+"//"+window.location.host+"/admin/clear", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({token:localStorage.getItem('manager')})
+    })
+    .then(res => {
+        if (res.status==400) {
+            admin_authority();
+        }else{
+            Swal.fire({
+                position: "top",
+                icon:   "info",
+                title:  '장치 정리',
+                text:   'null 장치를 제거했습니다',
+                showConfirmButton: false,
+                timer:  1500
+            }).then(() => {
+                location.reload();
+            });
+        }
+    });
 }
 ////-------------------////
