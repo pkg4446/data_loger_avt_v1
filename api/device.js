@@ -43,8 +43,6 @@ module.exports = {
         const   path_device = path_data.device()+"/"+device_id;
         if(file_system.check(path_user)){
             memory_admin.data_renewal(false);
-            const   path_user   = path_data.user()+"/"+user_id;
-            const   path_device = path_data.device()+"/"+device_id;
             if(file_system.check(path_device+"/owner.txt")) file_system.fileDel(path_device,"owner.txt");
             let new_list = "";
             if(file_system.check(path_user+"/device.csv")){
